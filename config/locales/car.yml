@@ -1,0 +1,24 @@
+pt-BR:
+  activerecord:
+    models:
+      car: 'Carro'
+    attributes:
+      car:
+        car_model_id: 'Modelo'
+        car_model: 'Modelo'
+        car_km: 'Quilometragem'
+        license_plate: 'Placa'
+        color: 'Cor'
+    errors:
+      models:
+        car:
+          attributes:
+            car_model:
+              blank: 'não pode ficar em branco.'
+              required: "é obrigatório."
+            car_km:
+              blank: 'não pode ficar em branco.'
+            license_plate:
+              blank: 'não pode ficar em branco.'
+            color:
+              blank: 'não pode ficar em branco.'

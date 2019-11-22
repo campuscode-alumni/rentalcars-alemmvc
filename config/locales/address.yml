@@ -1,0 +1,28 @@
+pt-BR:
+  activerecord:
+    models:
+      address: 'Endereço'
+    attributes:
+      address:
+        street: 'Logradouro'
+        number: 'Número'
+        neighborhood: 'Bairro'
+        complement: 'Complemento'
+        city: 'Cidade'
+        state: 'Estado'
+    errors:
+      models:
+        address:
+          attributes:
+            street:
+              blank: 'não pode ficar em branco.'
+            number:
+              blank: 'não pode ficar em branco.'
+            neighborhood: 
+              blank: 'não pode ficar em branco.'
+            complement:
+              blank: 'não pode ficar em branco.'
+            city:
+              blank: 'não pode ficar em branco.'
+            state:
+              blank: 'não pode ficar em branco.'

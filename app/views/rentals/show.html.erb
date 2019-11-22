@@ -1,0 +1,9 @@
+<h1>Locação de:  <%= @rental.client.name %></h1>
+<h3>Status: <%= t(@rental.status) %></h3>
+<p><%= Client.human_attribute_name('email') %>: <%= @rental.client.email %></p>
+<p>CPF/CNPJ: <%= @rental.client.cpf %></p>
+<p><%= Rental.human_attribute_name('start_date') %>: <%= l @rental.start_date, format: :long %>
+<p><%= Rental.human_attribute_name('end_date') %>: <%= l @rental.end_date, format: :long  %>
+<p><%= Rental.human_attribute_name('subsidiary') %>: <%= @rental.subsidiary.name %>
+<p><%= Rental.human_attribute_name('category') %>: <%= @rental.category.name  %>
+<p><%= Rental.human_attribute_name('price_projection') %>: <%= number_to_currency(@rental.price_projection) %>

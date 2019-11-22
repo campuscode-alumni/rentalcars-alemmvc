@@ -1,0 +1,24 @@
+<h1>Categorias de locação</h1>
+<%= link_to 'Nova categoria', new_category_path, class: 'btn btn-primary' %>
+<table class='table table-striped'>
+  <thead class='thead-dark'>
+    <tr>
+      <th scope="col"><%= Category.model_name.human %></th>
+      <th scope="col"><%= Category.human_attribute_name('daily_rate') %></th>
+      <th scope="col"><%= Category.human_attribute_name('car_insurance') %></th>
+      <th scope="col"><%= Category.human_attribute_name('third_party_insurance') %></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @categories.each do |category| %>
+      <tr>
+        <td><%= category.name %></td>
+        <td><%= number_to_currency(category.daily_rate) %></td>
+        <td><%= number_to_currency(category.car_insurance) %></td>
+        <td><%= number_to_currency(category.third_party_insurance) %></td>
+        <td><%= link_to 'Editar', edit_category_path(category.id) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

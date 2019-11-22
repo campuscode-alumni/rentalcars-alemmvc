@@ -1,0 +1,26 @@
+pt-BR:
+  activerecord:
+    models:
+      corporate_client: 'Cliente corporativo'
+    attributes:
+      corporate_client:
+        name: 'Nome'
+        trade_name: 'Nome fantasia'
+        email: 'E-mail'
+        cpf: 'CPF'
+        cnpj: 'CNPJ'
+    errors:
+      models:
+        corporate_client:
+          attributes:
+            name:
+              blank: 'não pode ficar em branco.'
+            trade_name:
+              blank: 'não pode ficar em branco.'
+            email: 
+              blank: 'não pode ficar em branco.'
+            cpf:
+              blank: 'não pode ficar em branco.'
+            cnpj:
+              blank: 'não pode ficar em branco.'
+

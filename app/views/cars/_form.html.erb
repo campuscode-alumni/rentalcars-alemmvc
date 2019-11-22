@@ -1,0 +1,29 @@
+<% if car.errors.any? %>
+  <div class="alert alert-danger">
+    <ul>
+      <% car.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_for car do |f| %>
+  <div class="form-group">
+    <%= f.label :car_model_id %>
+    <%= f.collection_select :car_model_id, @car_models, :id, :name, {}, class: 'form-control' %>
+  </div>
+  <div class="form-group">
+    <%= f.label :car_km %>
+    <%= f.text_field :car_km, class: 'form-control' %>
+  </div>
+  <div class="form-group">
+    <%= f.label :color %>
+    <%= f.text_field :color, class: 'form-control' %>
+  </div>
+  <div class="form-group">
+    <%= f.label :license_plate %>
+    <%= f.text_field :license_plate, class: 'form-control' %>
+  </div>
+  <%= f.submit 'Criar carro', class: 'btn btn-primary' %>
+<% end %>

@@ -1,0 +1,26 @@
+<h1>Locações</h1>
+<%= link_to 'Agendar locação', new_rental_path, class: 'btn btn-primary' %>
+<table class='table table-striped'>
+  <thead class='thead-dark'>
+    <tr>
+      <th scope="col"><%= Client.model_name.human %></th>
+      <th scope="col"><%= Client.human_attribute_name('email') %></th>
+      <th scope="col"><%= Rental.human_attribute_name('start_date') %></th>
+      <th scope="col"><%= Rental.human_attribute_name('end_date') %></th>
+      <th scope="col"><%= Rental.human_attribute_name('category')%></th>
+      <th scope="col"><%= Rental.human_attribute_name('price_projection')%></th>
+    </tr>
+  </thead>
+  <tbody>
+      <% @rentals.each do |rental| %>
+      <tr>
+        <td><%= link_to rental.client.name, rental_path(rental.id) %></td>
+        <td><%= rental.category.name %></td>
+        <td><%= l(rental.start_date, format: :long) %></td>
+        <td><%= l(rental.end_date, format: :long) %></td>
+        <td><%= rental.category.name %></td>
+        <td><%= number_to_currency(rental.price_projection) %></td>
+      </tr>
+      <% end %>
+  </tbody>
+</table>

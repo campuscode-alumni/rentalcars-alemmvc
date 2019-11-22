@@ -1,0 +1,26 @@
+pt-BR:
+  activerecord:
+    models:
+      rental: 'Preço da locação'
+    attributes:
+      rental:
+        start_date: 'Data de início'
+        end_date: 'Data de término'
+        category: 'Categoria'
+        category_id: 'Categoria'
+        subsidiary: 'Filial'
+        subsidiary_id: 'Filial'
+        client: 'Cliente'
+        client_id: 'Cliente'
+        price_projection: 'Valor estimado'
+    errors:
+      models:
+        rental:
+          attributes:
+            start_date:
+              blank: 'deve ser definida.'
+            end_date:
+              blank: 'deve ser definida.'
+  scheduled: 'agendada'
+  ongoing: 'em andamento'
+  finilized: 'finalizada'

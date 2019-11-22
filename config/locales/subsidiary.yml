@@ -1,0 +1,17 @@
+pt-BR:
+  activerecord:
+    models:
+      category: 'Categoria'
+      subsidiary: 'Filial'
+    attributes:
+      subsidiary:
+        name: 'Nome'
+        cnpj: 'CNPJ'
+    errors:
+      models:
+        subsidiary:
+          attributes:
+            name:
+              blank: "não pode ficar em branco."
+            cnpj:
+              blank: "não pode ficar em branco."

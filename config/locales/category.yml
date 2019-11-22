@@ -1,0 +1,18 @@
+pt-BR:
+  activerecord:
+    models:
+      category: 'Categoria'
+    attributes:
+      category:
+        name: 'Nome'
+        daily_rate: 'Diária padrão'
+        car_insurance: 'Seguro padrão do carro'
+        third_party_insurance: 'Seguro padrão contra terceiros'
+    errors:
+      attributes:
+        daily_rate:
+          blank: 'não pode ficar em branco.'
+        car_insurance:
+          blank: 'não pode ficar em branco.'
+        third_party_insurance:
+          blank: 'não pode ficar em branco.'

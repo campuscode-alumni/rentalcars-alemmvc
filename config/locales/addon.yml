@@ -1,0 +1,14 @@
+pt-BR:
+  activerecord:
+    models:
+      addon: 'Adicional'
+    attributes:
+      addon:
+        name: 'Nome'
+        description: 'Descrição'
+        photo: 'Foto'
+  addons:
+    create:
+      notice: 'Adicional criado com sucesso'
+    update:
+      notice: 'Adicional atualizado com sucesso'

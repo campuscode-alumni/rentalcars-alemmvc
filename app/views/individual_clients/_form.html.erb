@@ -1,0 +1,54 @@
+<% if individual_client.errors.any? %>
+  <div class="alert alert-danger">
+    <ul>
+      <% individual_client.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_for individual_client do |f| %>
+  <div class="form-group">
+    <%= f.label :name %>
+    <%= f.text_field :name, class: 'form-control' %>
+  </div>
+  <div class="form-group">
+    <%= f.label :cpf %>
+    <%= f.text_field :cpf, class: 'form-control' %>
+  </div>
+  <div class="form-group">
+    <%= f.label :email %>
+    <%= f.text_field :email, class: 'form-control' %>
+  </div>
+
+  <h3>Endereço</h3>
+  <%= f.fields_for :address do |address_form| %>
+    <div class="form-group">
+      <%= address_form.label :street %>
+      <%= address_form.text_field :street, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <%= address_form.label :number %>
+      <%= address_form.text_field :number, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <%= address_form.label :complement %>
+      <%= address_form.text_field :complement, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <%= address_form.label :neighborhood %>
+      <%= address_form.text_field :neighborhood, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <%= address_form.label :city %>
+      <%= address_form.text_field :city, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <%= address_form.label :state %>
+      <%= address_form.text_field :state, class: 'form-control' %>
+    </div>
+  <% end %>
+
+  <%= f.submit 'Enviar', class: 'btn btn-primary' %>
+<% end %>

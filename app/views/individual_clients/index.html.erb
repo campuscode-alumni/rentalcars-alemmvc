@@ -1,0 +1,10 @@
+<h1>Clientes individuais</h1>
+
+<%= link_to 'Registrar cliente individual', new_individual_client_path, class: 'btn btn-primary' %>
+
+<% @individual_clients.each do |client| %>
+  <p><%= link_to client.name, client %></p>
+<% end %>
+
+
+

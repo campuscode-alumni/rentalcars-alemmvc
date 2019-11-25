@@ -1,0 +1,6 @@
+<h1>Modelos de Carros</h1>
+<%= link_to 'Registrar novo modelo', new_car_model_path, class: 'btn btn-primary' %>
+
+<% @car_models.each do |model| %>
+  <h1><%= link_to model.name, model %></h1>
+<% end %>

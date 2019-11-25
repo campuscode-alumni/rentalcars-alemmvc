@@ -1,0 +1,18 @@
+<h1>Adicionais de locação</h1>
+
+<%= link_to 'Cadastrar', new_addon_path, class: 'btn btn-primary' %>
+
+<div class="cards">
+  <% @addons.each do |addon| %>
+    <div class="card" id="addon-<%= addon.id %>" style="width: 18rem;">
+      <% if addon.photo.attached? %>
+        <%= image_tag addon.photo, class: 'card-img-top' %>
+      <% end  %>
+      <div class="card-body">
+        <h5 class="card-title"><%= addon.name %></h5>
+        <p class="card-text"><%= addon.description %></p>
+        <%= link_to 'Editar', edit_addon_path(addon), class: 'btn btn-primary' %>
+      </div>
+    </div>
+  <% end %>
+</div>

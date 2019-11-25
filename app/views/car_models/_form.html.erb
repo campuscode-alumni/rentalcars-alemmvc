@@ -1,0 +1,45 @@
+<% if car_model.errors.any? %>
+  <div class="alert alert-danger">
+    <ul>
+      <% car_model.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_for car_model do |f| %>
+  <div class="form-group">
+    <%= f.label :name %>
+    <%= f.text_field :name, class: 'form-control' %>
+  </div>
+  <div class="form-group">
+    <%= f.label :year %>
+    <%= f.text_field :year, class: 'form-control' %>
+  </div>
+  <div class="form-group">
+    <%= f.label :manufacture_id %>
+    <%= f.collection_select :manufacture_id, @manufactures, :id, :name, {}, class: 'form-control' %>
+  </div>
+  <div class="form-group">
+    <%= f.label :motorization %>
+    <%= f.text_field :motorization, class: 'form-control' %>
+  </div>
+  <div class="form-group">
+    <%= f.label :fuel_type_id %>
+    <%= f.collection_select :fuel_type_id, @fuel_types, :id, :name, {}, class: 'form-control' %>
+  </div>
+  <div class="form-group">
+    <%= f.label :category_id %>
+    <%= f.collection_select :category_id, @categories, :id, :name, {}, class: 'form-control' %>
+  </div>
+  <div class="form-group">
+    <%= f.label :photo %>
+    <%= f.file_field :photo, class: 'form-control' %>
+  </div>
+  <div class="form-group">
+    <%= f.label :car_options %>
+    <%= f.text_area :car_options, class: 'form-control' %>
+  </div>
+  <%= f.submit 'Enviar', class: 'btn btn-primary' %>
+<% end %>

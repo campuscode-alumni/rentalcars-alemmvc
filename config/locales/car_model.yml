@@ -1,0 +1,31 @@
+pt-BR:
+  activerecord:
+    models:
+      car_model: 'Modelo'
+    attributes:
+      car_model:
+        name: 'Nome'
+        year: 'Ano'
+        manufacture_id: 'Fabricante'
+        motorization: 'Especificação do motor'
+        fuel_type_id: 'Combustível'
+        category_id: 'Categoria'
+        car_options: 'Características'
+    errors:
+      models:
+        car_model:
+          attributes:
+            name:
+              blank: 'não pode ficar em branco'
+            year:
+              blank: 'não pode ficar em branco'
+            manufacture:
+              required: 'é obrigatório'
+            motorization:
+              blank: 'não pode ficar em branco'
+            fuel_type:
+              required: 'é obrigatório'
+            category:
+              required: 'é obrigatório'
+            car_options:
+              blank: 'não pode ficar em branco'

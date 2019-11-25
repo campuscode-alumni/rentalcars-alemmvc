@@ -1,0 +1,791 @@
+diff --git a/.ruby-version b/.ruby-version
+index b2eb314..4560fb9 100644
+--- a/.ruby-version
++++ b/.ruby-version
+@@ -1 +1 @@
+-ruby-2.6.3
+\ No newline at end of file
++ruby-2.6.3
+diff --git a/README.md b/README.md
+index 7db80e4..a14068c 100644
+--- a/README.md
++++ b/README.md
+@@ -1,24 +1,43 @@
+-# README
++# Rental Cars
+ 
+-This README would normally document whatever steps are necessary to get the
+-application up and running.
++Rental Cars é um projeto de sistema administrativo de uma empresa que aluga
++carros para o público em geral. O foco do sistema é gerenciar a frota de carros,
++os clientes e as unidades (filiais) da empresa.
+ 
+-Things you may want to cover:
+ 
+-* Ruby version
++## Como iniciar o projeto
+ 
+-* System dependencies
++Para executar esse projeto você deve ter um computador, preferencialmente com
++Linux, com a linguagem de programação Ruby na versão 2.6.3
+ 
+-* Configuration
++Dentro do diretório do projeto, você deve instalar as dependências definidas no
++arquivo `Gemfile` com o comando `bundle install`.
+ 
+-* Database creation
++Com todas dependências instaladas, execute `rails server` e acesse
++`localhost:3000` em seu navegador.
+ 
+-* Database initialization
+ 
+-* How to run the test suite
++## Executando os testes
+ 
+-* Services (job queues, cache servers, search engines, etc.)
++Com todas dependências instaladas, como descrito na seção anterior, em seu
++terminal execute `rspec`.
+ 
+-* Deployment instructions
++## Principais Características e Funcionalidades
+ 
+-* ...
++- O projeto RentalCars é focado somente nos funcionários da empresa de locação,
++  servindo como um sistema interno e não como um site onde os clientes podem
++agendar locações
++- O sistema administra o cadastro de filiais (subsidiaries) 
++- O sistema gerencia categorias de carros e modelos de carros disponíveis para
++  locação, sem distinção de filiais
++- A categoria de um carro define seu preço padrão de locação, no entanto é
++  possívei customizar os preços de locação por filial
++- Um carro da frota deve ser sempre vinculado a um a filial
++- Uma locação deve ser agendada, definindo o cliente, as datas de retirada e
++  devolução e a categoria de carro. Nesse momento é feita uma validação de que
++existem carros disponíveis no período escolhido.
++- Ao finalizar o agendamento é gerado um código único da locação
++- Ao iniciar a locação, deve ser escolhido o carro de acordo com a categoria
++  escolhida
++- Uma locação deve ser composta de ao menos um carro e 0 ou N acessórios
++  adicionais (AddOns)
+diff --git a/app/controllers/rentals_controller.rb b/app/controllers/rentals_controller.rb
+index 2be3093..c9e097e 100644
+--- a/app/controllers/rentals_controller.rb
++++ b/app/controllers/rentals_controller.rb
+@@ -12,6 +12,7 @@ class RentalsController < ApplicationController
+   def create
+     @rental = Rental.new(rental_params)
+     subsidiary = current_subsidiary
++    category = Category.find(params['rental']['category_id'])
+     @rental.subsidiary = subsidiary
+     @rental.status = :scheduled
+     @rental.price_projection = @rental.calculate_price_projection
+@@ -24,52 +25,14 @@ class RentalsController < ApplicationController
+     end
+   end
+ 
+-  def confirm
+-    @rental = Rental.find(params[:id])
+-    if @car = Car.find_by(id: params[:car_id])
+-      @rental.rental_items.create(rentable: @car, daily_rate: @car.category.daily_rate + @car.category.third_party_insurance + @car.category.car_insurance)
+-      if addons = Addon.where(id: params[:addon_ids])
+-        addon_items = addons.map { |addon| addon.first_available_item }
+-        addon_items.each do |addon_item|
+-          @rental.rental_items.create(rentable: addon_item, daily_rate: addon_item.addon.daily_rate)
+-        end
+-      end
+-      @rental.update(price_projection: @rental.calculate_final_price)
+-      render :confirm
+-    else
+-      flash[:alert] = "Carro deve ser selecionado"
+-      @cars = @rental.available_cars
+-      @addons = Addon.joins(:addon_items).where(addon_items: { status: :available  }).group(:id)
+-      render :review
+-    end
+-  end
+-
+   def show
+     @rental = Rental.find(params[:id])
+   end
+ 
+-  def search
+-    @rental = Rental.find_by(reservation_code: params[:q])
+-    return redirect_to review_rental_path(@rental) if @rental
+-  end
+-
+-  def review
+-    @rental = Rental.find(params[:id])
+-    @rental.in_review!
+-    @cars = @rental.available_cars
+-    @addons = Addon.joins(:addon_items).where(addon_items: { status: :available  }).group(:id)
+-  end
+-
+-  def start
+-    @rental = Rental.find(params[:id])
+-    @rental.ongoing!
+-    redirect_to @rental
+-  end
+   private
+ 
+   def rental_params
+     params.require(:rental).permit(:category_id, :client_id, :start_date,
+-                                   :end_date,
+-                                   rental_items_attributes: [:car_id])
++                                   :end_date)
+   end
+ end
+diff --git a/app/models/addon.rb b/app/models/addon.rb
+index f8e7c72..58ec5e9 100644
+--- a/app/models/addon.rb
++++ b/app/models/addon.rb
+@@ -1,10 +1,7 @@
+ class Addon < ApplicationRecord
+   has_one_attached :photo
+-  has_many :addon_items
++
+   validates :name, :description, presence: true
+   validates :photo, attached: true, content_type: ['image/png', 'image/jpg',
+                                                    'image/jpeg']
+-  def first_available_item
+-    addon_items.find_by(status: :available)
+-  end
+ end
+diff --git a/app/models/addon_item.rb b/app/models/addon_item.rb
+deleted file mode 100644
+index aa20704..0000000
+--- a/app/models/addon_item.rb
++++ /dev/null
+@@ -1,4 +0,0 @@
+-class AddonItem < ApplicationRecord
+-  enum status: { available: 0, unavailable: 10 }
+-  belongs_to :addon
+-end
+diff --git a/app/models/car_model.rb b/app/models/car_model.rb
+index 5bc9568..1a744ef 100644
+--- a/app/models/car_model.rb
++++ b/app/models/car_model.rb
+@@ -2,7 +2,7 @@ class CarModel < ApplicationRecord
+   belongs_to :manufacture
+   belongs_to :fuel_type
+   belongs_to :category
+-  has_many :cars
++
+   validates :name, presence: true
+   validates :year, presence: true
+   validates :car_options, presence: true
+diff --git a/app/models/category.rb b/app/models/category.rb
+index 709e8b4..a97accc 100644
+--- a/app/models/category.rb
++++ b/app/models/category.rb
+@@ -1,6 +1,4 @@
+ class Category < ApplicationRecord
+   validates :name, :daily_rate, :car_insurance, :third_party_insurance, presence: true
+   has_many :rental_prices
+-  has_many :car_models
+-  has_many :cars, through: :car_models
+ end
+diff --git a/app/models/rental.rb b/app/models/rental.rb
+index 063874f..fbe06eb 100644
+--- a/app/models/rental.rb
++++ b/app/models/rental.rb
+@@ -1,14 +1,11 @@
+ class Rental < ApplicationRecord
+   before_create :generate_reservation_code
+-  enum status: { scheduled: 0, in_review: 5, ongoing: 10, finalized: 15 }
++  enum status: { scheduled: 0, ongoing: 1, finalized: 2 }
+   belongs_to :client
+   belongs_to :category
+   belongs_to :subsidiary
+   validates :start_date, :end_date, :price_projection, presence: true
+-  validate :start_cannot_be_greater_than_end, :price_cannot_be_zero
+-  validate :cars_available, on: :create
+-  has_many :rental_items
+-  accepts_nested_attributes_for :rental_items
++  validate :start_cannot_be_greater_than_end, :cars_available, :price_cannot_be_zero
+ 
+   def calculate_price_projection
+     return 0 unless start_date && end_date && category
+@@ -18,13 +15,6 @@ class Rental < ApplicationRecord
+     days * value
+   end
+ 
+-  def calculate_final_price
+-    days = (end_date - start_date).to_i
+-    value = 0
+-    rental_items.each { |rental_item| value += rental_item.daily_rate }
+-    days * value
+-  end
+-
+   def start_cannot_be_greater_than_end
+     return 0 if start_date.nil? || end_date.nil?
+     if start_date > end_date
+@@ -32,10 +22,6 @@ class Rental < ApplicationRecord
+     end
+   end
+ 
+-  def available_cars
+-    category.cars.where(status: :available)
+-  end
+-
+   def cars_available
+     if cars_available_at_date_range
+       errors.add(:category, 'Não há carros disponíveis na categoria escolhida.')
+@@ -48,10 +34,6 @@ class Rental < ApplicationRecord
+     end
+   end
+ 
+-  def car
+-    rental_items.find_by(rentable_type: 'Car')
+-  end
+-
+   private
+ 
+   def cars_available_at_date_range
+diff --git a/app/models/rental_item.rb b/app/models/rental_item.rb
+deleted file mode 100644
+index 34d86a5..0000000
+--- a/app/models/rental_item.rb
++++ /dev/null
+@@ -1,8 +0,0 @@
+-class RentalItem < ApplicationRecord
+-  belongs_to :rental
+-  belongs_to :rentable, polymorphic: true
+-
+-  def car?
+-    rentable.is_a? Car
+-  end
+-end
+diff --git a/app/views/addons/index.html.erb b/app/views/addons/index.html.erb
+index 6511498..1990321 100644
+--- a/app/views/addons/index.html.erb
++++ b/app/views/addons/index.html.erb
+@@ -4,9 +4,7 @@
+ 
+ <% @addons.each do |addon| %>
+   <div class="card" id="addon-<%= addon.id %>" style="width: 18rem;">
+-    <% if addon.photo.attached? %>
+-      <%= image_tag addon.photo, class: 'card-img-top' %>
+-    <% end  %>
++    <%= image_tag addon.photo, class: 'card-img-top' %>
+     <div class="card-body">
+       <h5 class="card-title"><%= addon.name %></h5>
+       <p class="card-text"><%= addon.description %></p>
+diff --git a/app/views/rentals/confirm.html.erb b/app/views/rentals/confirm.html.erb
+deleted file mode 100644
+index cf1a059..0000000
+--- a/app/views/rentals/confirm.html.erb
++++ /dev/null
+@@ -1,15 +0,0 @@
+-<h1>Confirmar dados da locação</h1>
+-<h1>Locação de:  <%= @rental.client.name %></h1>
+-<p><%= Rental.human_attribute_name('reservation_code')  %>: <%= @rental.reservation_code %></p>
+-<p><%= Rental.human_attribute_name('start_date') %>: <%= l @rental.start_date, format: :long %>
+-<p><%= Rental.human_attribute_name('end_date') %>: <%= l @rental.end_date, format: :long  %>
+-<p><%= Rental.human_attribute_name('subsidiary') %>: <%= @rental.subsidiary.name %>
+-<p><%= Rental.human_attribute_name('category') %>: <%= @rental.category.name  %>
+-<% @rental.rental_items.each do |rental_item| %>
+-  <% if !rental_item.car? %>
+-    <p><%= rental_item.rentable.addon.name %>: n <%= rental_item.rentable.registration_number  %></p>
+-  <% end %>
+-<% end %>
+-<p><%= Rental.human_attribute_name('price_projection') %>: <%= number_to_currency(@rental.price_projection) %>
+-<p><%= Rental.human_attribute_name('license_plate') %>: <%= @car.license_plate %><p>
+-<%= link_to 'Confirmar', start_rental_path, method: :post %>
+diff --git a/app/views/rentals/index.html.erb b/app/views/rentals/index.html.erb
+index 123e368..25174da 100644
+--- a/app/views/rentals/index.html.erb
++++ b/app/views/rentals/index.html.erb
+@@ -1,10 +1,5 @@
+ <h1>Locações</h1>
+ <%= link_to 'Agendar locação', new_rental_path, class: 'btn btn-primary' %>
+-<%= form_with(url: search_rentals_path, method: :get, data: {remote: false}) do |f| %>
+-  <%= f.label(:q, 'Código da reserva:') %>
+-  <%= f.text_field(:q)  %>
+-  <%= f.submit 'Buscar' %>
+-<% end %>
+ <table class='table table-striped'>
+   <thead class='thead-dark'>
+     <tr>
+diff --git a/app/views/rentals/review.html.erb b/app/views/rentals/review.html.erb
+deleted file mode 100644
+index bea72d0..0000000
+--- a/app/views/rentals/review.html.erb
++++ /dev/null
+@@ -1,20 +0,0 @@
+-<h1>Locação de:  <%= @rental.client.name %></h1>
+-<%= flash[:alert] %>
+-<h3>Status: <%= t(@rental.status) %></h3>
+-<p><%= Rental.human_attribute_name('reservation_code') %>: <%= @rental.reservation_code %></p>
+-<p><%= Client.human_attribute_name('email') %>: <%= @rental.client.email %></p>
+-<p>CPF/CNPJ: <%= @rental.client.cpf %></p>
+-<p><%= Rental.human_attribute_name('start_date') %>: <%= l @rental.start_date, format: :long %>
+-<p><%= Rental.human_attribute_name('end_date') %>: <%= l @rental.end_date, format: :long  %>
+-<p><%= Rental.human_attribute_name('subsidiary') %>: <%= @rental.subsidiary.name %>
+-<p><%= Rental.human_attribute_name('category') %>: <%= @rental.category.name  %>
+-<p><%= Rental.human_attribute_name('price_projection') %>: <%= number_to_currency(@rental.price_projection) %>
+-<ul>
+-<%= form_with url: confirm_rental_path, method: :post, data: { remote: false } do |f| %>
+-  <h3>Carros</h3>
+-  <%= f.collection_radio_buttons :car_id, @cars, :id, :license_plate %>
+-  <h3>Acessórios</h3>
+-  <%= f.collection_check_boxes :addon_ids, @addons, :id, :name, include_hidden: false %>
+-  <%= f.submit 'Iniciar locação' %>
+-<% end %>
+-</ul>
+diff --git a/app/views/rentals/show.html.erb b/app/views/rentals/show.html.erb
+index d45aa39..c80aab9 100644
+--- a/app/views/rentals/show.html.erb
++++ b/app/views/rentals/show.html.erb
+@@ -1,6 +1,5 @@
+ <h1>Locação de:  <%= @rental.client.name %></h1>
+ <h3>Status: <%= t(@rental.status) %></h3>
+-<p><%= Rental.human_attribute_name('reservation_code') %>: <%= @rental.reservation_code %></p>
+ <p><%= Client.human_attribute_name('email') %>: <%= @rental.client.email %></p>
+ <p>CPF/CNPJ: <%= @rental.client.cpf %></p>
+ <p><%= Rental.human_attribute_name('start_date') %>: <%= l @rental.start_date, format: :long %>
+diff --git a/config/locales/rental.yml b/config/locales/rental.yml
+index 181a38c..79afe71 100644
+--- a/config/locales/rental.yml
++++ b/config/locales/rental.yml
+@@ -13,7 +13,6 @@ pt-BR:
+         client: 'Cliente'
+         client_id: 'Cliente'
+         price_projection: 'Valor estimado'
+-        reservation_code: 'Código do agendamento'
+     errors:
+       models:
+         rental:
+diff --git a/config/routes.rb b/config/routes.rb
+index 64f32c2..0c755ac 100644
+--- a/config/routes.rb
++++ b/config/routes.rb
+@@ -16,14 +16,6 @@ Rails.application.routes.draw do
+   resources :individual_clients, only: %i[show new create index edit update]
+   resources :corporate_clients, only: %i[show new create index edit update]
+   resources :categories, only: %i[index new create edit update]
+-  resources :rentals, only: %i[index new create show] do
+-    get 'search', on: :collection
+-    member do
+-      get 'review'
+-      post 'confirm'
+-      post 'start'
+-    end
+-  end
+-
++  resources :rentals, only: %i[index new create show]
+   resources :addons, only: %i[index new create edit update]
+ end
+diff --git a/db/migrate/20191121205320_create_rental_items.rb b/db/migrate/20191121205320_create_rental_items.rb
+deleted file mode 100644
+index adc3898..0000000
+--- a/db/migrate/20191121205320_create_rental_items.rb
++++ /dev/null
+@@ -1,9 +0,0 @@
+-class CreateRentalItems < ActiveRecord::Migration[5.2]
+-  def change
+-    create_table :rental_items do |t|
+-      t.references :rental, foreign_key: true
+-
+-      t.timestamps
+-    end
+-  end
+-end
+diff --git a/db/migrate/20191121224718_add_rentable_to_rental_item.rb b/db/migrate/20191121224718_add_rentable_to_rental_item.rb
+deleted file mode 100644
+index 0ceb183..0000000
+--- a/db/migrate/20191121224718_add_rentable_to_rental_item.rb
++++ /dev/null
+@@ -1,5 +0,0 @@
+-class AddRentableToRentalItem < ActiveRecord::Migration[5.2]
+-  def change
+-    add_reference :rental_items, :rentable, polymorphic: true
+-  end
+-end
+diff --git a/db/migrate/20191122151932_create_addon_items.rb b/db/migrate/20191122151932_create_addon_items.rb
+deleted file mode 100644
+index 9ac50c3..0000000
+--- a/db/migrate/20191122151932_create_addon_items.rb
++++ /dev/null
+@@ -1,10 +0,0 @@
+-class CreateAddonItems < ActiveRecord::Migration[5.2]
+-  def change
+-    create_table :addon_items do |t|
+-      t.references :addon, foreign_key: true
+-      t.string :registration_number
+-
+-      t.timestamps
+-    end
+-  end
+-end
+diff --git a/db/migrate/20191122152016_add_status_to_addon_item.rb b/db/migrate/20191122152016_add_status_to_addon_item.rb
+deleted file mode 100644
+index 2dec710..0000000
+--- a/db/migrate/20191122152016_add_status_to_addon_item.rb
++++ /dev/null
+@@ -1,5 +0,0 @@
+-class AddStatusToAddonItem < ActiveRecord::Migration[5.2]
+-  def change
+-    add_column :addon_items, :status, :integer
+-  end
+-end
+diff --git a/db/migrate/20191122162405_add_daily_rate_to_addon.rb b/db/migrate/20191122162405_add_daily_rate_to_addon.rb
+deleted file mode 100644
+index 5340320..0000000
+--- a/db/migrate/20191122162405_add_daily_rate_to_addon.rb
++++ /dev/null
+@@ -1,5 +0,0 @@
+-class AddDailyRateToAddon < ActiveRecord::Migration[5.2]
+-  def change
+-    add_column :addons, :daily_rate, :float
+-  end
+-end
+diff --git a/db/migrate/20191122162504_add_daily_rate_to_addon_item.rb b/db/migrate/20191122162504_add_daily_rate_to_addon_item.rb
+deleted file mode 100644
+index 81556b6..0000000
+--- a/db/migrate/20191122162504_add_daily_rate_to_addon_item.rb
++++ /dev/null
+@@ -1,5 +0,0 @@
+-class AddDailyRateToAddonItem < ActiveRecord::Migration[5.2]
+-  def change
+-    add_column :addon_items, :daily_rate, :float
+-  end
+-end
+diff --git a/db/migrate/20191122164652_remove_daily_rate_from_addon_item.rb b/db/migrate/20191122164652_remove_daily_rate_from_addon_item.rb
+deleted file mode 100644
+index 259469f..0000000
+--- a/db/migrate/20191122164652_remove_daily_rate_from_addon_item.rb
++++ /dev/null
+@@ -1,4 +0,0 @@
+-class RemoveDailyRateFromAddonItem < ActiveRecord::Migration[5.2]
+-  def change
+-  end
+-end
+diff --git a/db/migrate/20191122164716_add_daily_rate_to_rental_item.rb b/db/migrate/20191122164716_add_daily_rate_to_rental_item.rb
+deleted file mode 100644
+index 0f841b8..0000000
+--- a/db/migrate/20191122164716_add_daily_rate_to_rental_item.rb
++++ /dev/null
+@@ -1,5 +0,0 @@
+-class AddDailyRateToRentalItem < ActiveRecord::Migration[5.2]
+-  def change
+-    add_column :rental_items, :daily_rate, :float
+-  end
+-end
+diff --git a/db/schema.rb b/db/schema.rb
+index 292e3a3..054e3a1 100644
+--- a/db/schema.rb
++++ b/db/schema.rb
+@@ -10,7 +10,7 @@
+ #
+ # It's strongly recommended that you check this file into your version control system.
+ 
+-ActiveRecord::Schema.define(version: 2019_11_22_164716) do
++ActiveRecord::Schema.define(version: 2019_11_21_163247) do
+ 
+   create_table "active_storage_attachments", force: :cascade do |t|
+     t.string "name", null: false
+@@ -33,22 +33,11 @@ ActiveRecord::Schema.define(version: 2019_11_22_164716) do
+     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+   end
+ 
+-  create_table "addon_items", force: :cascade do |t|
+-    t.integer "addon_id"
+-    t.string "registration_number"
+-    t.datetime "created_at", null: false
+-    t.datetime "updated_at", null: false
+-    t.integer "status"
+-    t.float "daily_rate"
+-    t.index ["addon_id"], name: "index_addon_items_on_addon_id"
+-  end
+-
+   create_table "addons", force: :cascade do |t|
+     t.string "name"
+     t.text "description"
+     t.datetime "created_at", null: false
+     t.datetime "updated_at", null: false
+-    t.float "daily_rate"
+   end
+ 
+   create_table "addresses", force: :cascade do |t|
+@@ -123,17 +112,6 @@ ActiveRecord::Schema.define(version: 2019_11_22_164716) do
+     t.datetime "updated_at", null: false
+   end
+ 
+-  create_table "rental_items", force: :cascade do |t|
+-    t.integer "rental_id"
+-    t.datetime "created_at", null: false
+-    t.datetime "updated_at", null: false
+-    t.string "rentable_type"
+-    t.integer "rentable_id"
+-    t.float "daily_rate"
+-    t.index ["rentable_type", "rentable_id"], name: "index_rental_items_on_rentable_type_and_rentable_id"
+-    t.index ["rental_id"], name: "index_rental_items_on_rental_id"
+-  end
+-
+   create_table "rental_prices", force: :cascade do |t|
+     t.float "daily_rate"
+     t.integer "subsidiary_id"
+diff --git a/db/seeds.rb b/db/seeds.rb
+index b3a4826..3518d6d 100644
+--- a/db/seeds.rb
++++ b/db/seeds.rb
+@@ -22,11 +22,3 @@ Manufacture.create(name: 'Fiat')
+ Manufacture.create(name: 'Ford')
+ FuelType.create(name: 'Gasolina')
+ FuelType.create(name: 'Álcool')
+-addon_gps = Addon.create(name: 'GPS', description: 'Aparelho de GPS', daily_rate: 10.0)
+-addon_bebe = Addon.create(name: 'Bebê conforto', description: 'Bebê conforto da marca X',
+-                          daily_rate: 20.0)
+-Addon.create(name: 'Porta copos', description: 'Suporte para copos', daily_rate: 5.0)
+-AddonItem.create(addon: addon_gps, registration_number: '123456', status: :available)
+-AddonItem.create(addon: addon_gps, registration_number: '789010', status: :unavailable)
+-AddonItem.create(addon: addon_bebe, registration_number: '1234AR', status: :available)
+-AddonItem.create(addon: addon_bebe, registration_number: '789010', status: :unavailable)
+diff --git a/spec/factories/addon_items.rb b/spec/factories/addon_items.rb
+deleted file mode 100644
+index f9e7ff7..0000000
+--- a/spec/factories/addon_items.rb
++++ /dev/null
+@@ -1,7 +0,0 @@
+-FactoryBot.define do
+-  factory :addon_item do
+-    addon { addon }
+-    registration_number { "NUMERODEREGISTRO" }
+-    status { :available }
+-  end
+-end
+diff --git a/spec/factories/rental_items.rb b/spec/factories/rental_items.rb
+deleted file mode 100644
+index 62fa3aa..0000000
+--- a/spec/factories/rental_items.rb
++++ /dev/null
+@@ -1,6 +0,0 @@
+-FactoryBot.define do
+-  factory :rental_item do
+-    rental { nil }
+-    car { nil }
+-  end
+-end
+diff --git a/spec/features/user/user_fulfils_rental_spec.rb b/spec/features/user/user_fulfils_rental_spec.rb
+deleted file mode 100644
+index 8ed4a08..0000000
+--- a/spec/features/user/user_fulfils_rental_spec.rb
++++ /dev/null
+@@ -1,196 +0,0 @@
+-require 'rails_helper'
+-
+-feature 'User fulfils rental' do
+-  scenario 'and starts review by searching code' do
+-    subsidiary = create(:subsidiary, name: 'Almeida Motors')
+-    user = create(:user, subsidiary: subsidiary)
+-    manufacture = create(:manufacture)
+-    fuel_type = create(:fuel_type)
+-    category = create(:category, name: 'A', daily_rate: 10, car_insurance: 20,
+-                      third_party_insurance: 20)
+-    customer = create(:individual_client, name: 'Claudionor',
+-                    cpf: '318.421.176-43', email: 'cro@email.com')
+-    car_model = create(:car_model, name: 'Sedan', manufacture: manufacture,
+-                       fuel_type: fuel_type, category: category)
+-    car = create(:car, car_model: car_model, license_plate: 'TAT-1234')
+-    other_car = create(:car, car_model: car_model, license_plate: 'RER-1234')
+-    rental = create(:rental, category: category, subsidiary: subsidiary,
+-                    start_date: '3000-01-08', end_date: '3000-01-10',
+-                    client: customer, price_projection: 100, status: :scheduled)
+-    login_as user, scope: :user
+-
+-    visit root_path
+-    click_on 'Locações'
+-    fill_in 'Código da reserva', with: rental.reservation_code
+-    click_on 'Buscar'
+-
+-    expect(page).to have_content(rental.reservation_code)
+-    expect(page).to have_content('Data de início: 08 de janeiro de 3000')
+-    expect(page).to have_content('Data de término: 10 de janeiro de 3000')
+-    expect(page).to have_content('Categoria: A')
+-    expect(page).to have_content('Locação de: Claudionor')
+-    expect(page).to have_content('CPF/CNPJ: 318.421.176-43')
+-    expect(page).to have_content('E-mail: cro@email.com')
+-    expect(page).to have_content(car.license_plate)
+-    expect(page).to have_content(other_car.license_plate)
+-    expect(rental.reload).to be_in_review
+-  end
+-
+-  scenario 'susccesfully without addons' do
+-    subsidiary = create(:subsidiary, name: 'Almeida Motors')
+-    user = create(:user, subsidiary: subsidiary)
+-    manufacture = create(:manufacture)
+-    fuel_type = create(:fuel_type)
+-    category = create(:category, name: 'A', daily_rate: 10, car_insurance: 20,
+-                      third_party_insurance: 20)
+-    customer = create(:individual_client, name: 'Claudionor',
+-                    cpf: '318.421.176-43', email: 'cro@email.com')
+-    car_model = create(:car_model, name: 'Sedan', manufacture: manufacture,
+-                       fuel_type: fuel_type, category: category)
+-    create(:car, car_model: car_model, license_plate: 'MVM-838')
+-    create(:car, car_model: car_model, license_plate: 'TLA-090')
+-    rental = create(:rental, category: category, subsidiary: subsidiary,
+-                    start_date: '3000-01-08', end_date: '3000-01-10',
+-                    client: customer, price_projection: 100, status: :scheduled)
+-    addon_confort = create(:addon, name: 'Bebê conforto', daily_rate: 10.0)
+-    create(:addon_item, addon: addon_confort, registration_number: '123456',
+-           status: :available)
+-    create(:addon_item, addon: addon_confort, registration_number: '123456',
+-           status: :unavailable)
+-    addon_gps = create(:addon, name: 'GPS', daily_rate: 20.0)
+-    create(:addon_item, addon: addon_gps, registration_number: '123456',
+-           status: :unavailable)
+-    create(:addon_item, addon: addon_gps, registration_number: '789010',
+-           status: :available)
+-    create(:addon, name: 'Porta celular')
+-    login_as user, scope: :user
+-
+-    visit root_path
+-    click_on 'Locações'
+-    fill_in 'Código da reserva', with: rental.reservation_code
+-    click_on 'Buscar'
+-    choose 'TLA-090'
+-    click_on 'Iniciar locação'
+-
+-    expect(page).to have_content('Confirmar dados da locação')
+-    expect(page).to have_content('Categoria: A')
+-    expect(page).to have_content('TLA-090')
+-    expect(page).to have_content('Valor estimado: R$ 100,00')
+-  end
+-
+-  scenario 'successfully with addons' do
+-    subsidiary = create(:subsidiary, name: 'Almeida Motors')
+-    user = create(:user, subsidiary: subsidiary)
+-    manufacture = create(:manufacture)
+-    fuel_type = create(:fuel_type)
+-    category = create(:category, name: 'A', daily_rate: 10, car_insurance: 20,
+-                      third_party_insurance: 20)
+-    customer = create(:individual_client, name: 'Claudionor',
+-                    cpf: '318.421.176-43', email: 'cro@email.com')
+-    car_model = create(:car_model, name: 'Sedan', manufacture: manufacture,
+-                       fuel_type: fuel_type, category: category)
+-    create(:car, car_model: car_model, license_plate: 'MVM-838')
+-    create(:car, car_model: car_model, license_plate: 'TLA-090')
+-    rental = create(:rental, category: category, subsidiary: subsidiary,
+-                    start_date: '3000-01-08', end_date: '3000-01-10',
+-                    client: customer, price_projection: 100, status: :scheduled)
+-    addon_confort = create(:addon, name: 'Bebê conforto', daily_rate: 10.0)
+-    create(:addon_item, addon: addon_confort, registration_number: '123456',
+-           status: :available)
+-    create(:addon_item, addon: addon_confort, registration_number: '123456',
+-           status: :unavailable)
+-    addon_gps = create(:addon, name: 'GPS', daily_rate: 20.0)
+-    create(:addon_item, addon: addon_gps, registration_number: '123456',
+-           status: :unavailable)
+-    create(:addon_item, addon: addon_gps, registration_number: '789010',
+-           status: :available)
+-    create(:addon, name: 'Porta celular')
+-    login_as user, scope: :user
+-
+-    visit root_path
+-    click_on 'Locações'
+-    fill_in 'Código da reserva', with: rental.reservation_code
+-    click_on 'Buscar'
+-    choose 'TLA-090'
+-    check('Bebê conforto')
+-    check('GPS')
+-    click_on 'Iniciar locação'
+-
+-    expect(page).to have_content('Confirmar dados da locação')
+-    expect(page).to have_content('Categoria: A')
+-    expect(page).to have_content('TLA-090')
+-    expect(page).to have_content('Bebê conforto: n 123456')
+-    expect(page).to have_content('GPS: n 789010')
+-    expect(page).to have_content('Valor estimado: R$ 160,00')
+-  end
+-
+-  scenario 'and a car must be selected' do
+-    subsidiary = create(:subsidiary, name: 'Almeida Motors')
+-    user = create(:user, subsidiary: subsidiary)
+-    manufacture = create(:manufacture)
+-    fuel_type = create(:fuel_type)
+-    category = create(:category, name: 'A', daily_rate: 10, car_insurance: 20,
+-                      third_party_insurance: 20)
+-    customer = create(:individual_client, name: 'Claudionor',
+-                    cpf: '318.421.176-43', email: 'cro@email.com')
+-    car_model = create(:car_model, name: 'Sedan', manufacture: manufacture,
+-                       fuel_type: fuel_type, category: category)
+-    create(:car, car_model: car_model, license_plate: 'MVM-838')
+-    create(:car, car_model: car_model, license_plate: 'TLA-090')
+-    rental = create(:rental, category: category, subsidiary: subsidiary,
+-                    start_date: '3000-01-08', end_date: '3000-01-10',
+-                    client: customer, price_projection: 100, status: :scheduled)
+-    login_as user, scope: :user
+-
+-    visit root_path
+-    click_on 'Locações'
+-    fill_in 'Código da reserva', with: rental.reservation_code
+-    click_on 'Buscar'
+-    click_on 'Iniciar locação'
+-
+-    expect(page).to have_content('Carro deve ser selecionado')
+-  end
+-
+-  scenario 'and confirms rental' do
+-    subsidiary = create(:subsidiary, name: 'Almeida Motors')
+-    user = create(:user, subsidiary: subsidiary)
+-    manufacture = create(:manufacture)
+-    fuel_type = create(:fuel_type)
+-    category = create(:category, name: 'A', daily_rate: 10, car_insurance: 20,
+-                      third_party_insurance: 20)
+-    customer = create(:individual_client, name: 'Claudionor',
+-                    cpf: '318.421.176-43', email: 'cro@email.com')
+-    car_model = create(:car_model, name: 'Sedan', manufacture: manufacture,
+-                       fuel_type: fuel_type, category: category)
+-    create(:car, car_model: car_model, license_plate: 'MVM-838')
+-    create(:car, car_model: car_model, license_plate: 'TLA-090')
+-    rental = create(:rental, category: category, subsidiary: subsidiary,
+-                    start_date: '3000-01-08', end_date: '3000-01-10',
+-                    client: customer, price_projection: 100, status: :scheduled)
+-    addon_confort = create(:addon, name: 'Bebê conforto', daily_rate: 10.0)
+-    create(:addon_item, addon: addon_confort, registration_number: '123456',
+-           status: :available)
+-    create(:addon_item, addon: addon_confort, registration_number: '123456',
+-           status: :unavailable)
+-    addon_gps = create(:addon, name: 'GPS', daily_rate: 20.0)
+-    create(:addon_item, addon: addon_gps, registration_number: '123456',
+-           status: :unavailable)
+-    create(:addon_item, addon: addon_gps, registration_number: '789010',
+-           status: :available)
+-    create(:addon, name: 'Porta celular')
+-    login_as user, scope: :user
+-
+-    visit root_path
+-    click_on 'Locações'
+-    fill_in 'Código da reserva', with: rental.reservation_code
+-    click_on 'Buscar'
+-    choose 'TLA-090'
+-    check('Bebê conforto')
+-    check('GPS')
+-    click_on 'Iniciar locação'
+-    click_on 'Confirmar'
+-
+-    expect(current_path).to eq rental_path(rental)
+-    expect(page).to have_content('em andamento')
+-  end
+-end
+diff --git a/spec/models/addon_item_spec.rb b/spec/models/addon_item_spec.rb
+deleted file mode 100644
+index b74d207..0000000
+--- a/spec/models/addon_item_spec.rb
++++ /dev/null
+@@ -1,5 +0,0 @@
+-require 'rails_helper'
+-
+-RSpec.describe AddonItem, type: :model do
+-  pending "add some examples to (or delete) #{__FILE__}"
+-end
+diff --git a/spec/models/rental_item_spec.rb b/spec/models/rental_item_spec.rb
+deleted file mode 100644
+index e3c788b..0000000
+--- a/spec/models/rental_item_spec.rb
++++ /dev/null
+@@ -1,5 +0,0 @@
+-require 'rails_helper'
+-
+-RSpec.describe RentalItem, type: :model do
+-  pending "add some examples to (or delete) #{__FILE__}"
+-end

@@ -1,0 +1,24 @@
+pt-BR:
+  activerecord:
+    models:
+      category: 'Categoria'
+      rental_price: 'Preço da locação'
+    attributes:
+      rental_price:
+        daily_rate: 'Diária'
+        daily_car_insurance: 'Seguro do carro'
+        daily_third_party_insurance: 'Seguro contra terceiros'
+        category: 'Categoria'
+        category_id: 'Categoria'
+        subsidiary: 'Filial'
+    errors:
+      models:
+        rental_price:
+          attributes:
+            daily_rate:
+              blank: 'não pode ficar em branco.'
+            daily_car_insurance:
+              blank: 'não pode ficar em branco.'
+            daily_third_party_insurance:
+              blank: 'não pode ficar em branco.'
+

@@ -1,0 +1,5 @@
+<h1>Fabricantes</h1>
+<%= link_to 'Registrar novo fabricante', new_manufacture_path, class: 'btn btn-primary'%>
+<% @manufactures.each do |manufacture| %>
+  <p> <%= link_to manufacture.name, manufacture %> </p>
+<% end %>

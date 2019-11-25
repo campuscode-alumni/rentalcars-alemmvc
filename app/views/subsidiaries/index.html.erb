@@ -1,0 +1,7 @@
+<h1>Filiais</h1>
+
+<%= link_to 'Registrar nova filial', new_subsidiary_path, class: 'btn btn-primary' %>
+
+<% @subsidiaries.each do |subsidiary| %>
+  <h1><%= link_to subsidiary.name, subsidiary %></h1>
+<% end %>

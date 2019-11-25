@@ -1,0 +1,16 @@
+<h1>Confirmar dados da locação</h1>
+<h1>Locação de:  <%= @rental.client.name %></h1>
+<p><%= Rental.human_attribute_name('reservation_code')  %>: <%= @rental.reservation_code %></p>
+<p><%= Rental.human_attribute_name('start_date') %>: <%= l @rental.start_date, format: :long %>
+<p><%= Rental.human_attribute_name('end_date') %>: <%= l @rental.end_date, format: :long  %>
+<p><%= Rental.human_attribute_name('subsidiary') %>: <%= @rental.subsidiary.name %>
+<p><%= Rental.human_attribute_name('category') %>: <%= @rental.category.name  %>
+<% @rental.rental_items.each do |rental_item| %>
+  <% if !rental_item.car? %>
+    <p><%= rental_item.rentable.addon.name %>: n <%= rental_item.rentable.registration_number  %></p>
+  <% end %>
+<% end %>
+<p><%= Rental.human_attribute_name('price_projection') %>: <%= number_to_currency(@rental.price_projection) %>
+<p><%= Rental.human_attribute_name('license_plate') %>: <%= @car.license_plate %><p>
+
+<%= link_to 'Confirmar', start_rental_path, method: :post %>

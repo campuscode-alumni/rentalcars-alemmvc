@@ -1,0 +1,32 @@
+<dl class="row">
+  <dt class="col-sm-3">Nome</dt>
+  <dd class="col-sm-9"><%= @car_model.name %></dd>
+
+  <dt class="col-sm-3">Ano</dt>
+  <dd class="col-sm-9"><%= @car_model.year %></dd>
+
+  <dt class="col-sm-3">Fabricante</dt>
+  <dd class="col-sm-9"><%= @car_model.manufacture.name %></dd>
+
+    <% if @car_model.photo.attached? %>
+      <%= image_tag @car_model.photo, class: 'card-img-top' %>
+    <% end  %>
+
+  <dt class="col-sm-3">Especificação do motor</dt>
+  <dd class="col-sm-9"><%= @car_model.motorization %></dd>
+
+  <dt class="col-sm-3">Combustível</dt>
+  <dd class="col-sm-9"><%= @car_model.fuel_type.name %></dd>
+
+  <dt class="col-sm-3">Categoria</dt>
+  <dd class="col-sm-9"><%= @car_model.category.name %></dd>
+
+<dt class="col-sm-3">Características</dt>
+  <dd class="col-sm-9">
+    <% @car_model.car_options.split(',') do |option| %>
+      <p><%= option %></p>
+    <% end %>
+  </dd>
+  
+  <dd class="col-sm-9"><%= link_to 'Editar', edit_car_model_path, class: 'btn btn-primary' %></dd>
+</dl>

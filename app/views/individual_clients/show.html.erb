@@ -1,0 +1,29 @@
+<h1>Cliente individual</h1>
+
+<h3>Nome</h3>
+<p><%= @individual_client.name %></p>
+<h3>CPF</h3>
+<p><%= @individual_client.cpf %></p>
+<h3>E-mail</h3>
+<p><%= @individual_client.email %></p>
+
+<h3>Endereço</h3>
+
+<dl class="row">
+  <dt class="col-sm-3">Endereço</dt>
+  <dd class="col-sm-9"><%= @individual_client.address.label %></dd>
+
+  <dt class="col-sm-3">Complemento</dt>
+  <dd class="col-sm-9"><%= @individual_client.address.complement %></dd>
+
+  <dt class="col-sm-3">Bairro</dt>
+  <dd class="col-sm-9"><%= @individual_client.address.neighborhood %></dd>
+
+  <dt class="col-sm-3">Cidade</dt>
+  <dd class="col-sm-9"><%= @individual_client.address.city %></dd>
+
+  <dt class="col-sm-3">Estado</dt>
+  <dd class="col-sm-9"><%= @individual_client.address.state %></dd>
+</dl>
+
+<%= link_to 'Editar', edit_individual_client_path, class: 'btn btn-primary' %>

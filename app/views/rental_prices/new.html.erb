@@ -1,0 +1,63 @@
+<h1>Configurar preços de locações</h1>
+<% if !@messages.nil?  %>
+  <div class="alert alert-danger">
+    <ul>
+      <% @messages.each do |message| %>
+        <li><%= message  %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+<h2>Filial: <%= @subsidiary.name  %></h2>
+<table class='table table-striped'>
+  <thead class='thead-dark'>
+    <tr>
+      <th scope="col"><%= Category.model_name.human %></th>
+      <th scope="col"><%= RentalPrice.human_attribute_name('daily_rate') %></th>
+      <th scope="col"><%= RentalPrice.human_attribute_name('daily_car_insurance') %></th>
+      <th scope="col"><%= RentalPrice.human_attribute_name('daily_third_party_insurance') %></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= form_tag rental_price_subsidiary_path(@subsidiary), method: :post do %>
+  <% @rental_prices.each do |category, rental_price| %>
+    <tr>
+    <%= fields_for 'rental_prices[]', rental_price do |r| %>
+      <div class=<%= "rental_price#{category.id}" %>>
+        <td><%= category.name %></td>
+            <%= r.hidden_field(:category_id, :value=>category.id) %>
+        <td>
+          <div class="input-group mb-0">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="basic-addon1">$</span>
+            </div>
+            <%= r.number_field(:daily_rate, class:"daily_rate form-control", describedby: 'basic-addon1') %>
+          </div>
+        </td>
+        <td>
+          <div class="input-group mb-0">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="basic-addon2">$</span>
+            </div>
+            <%= r.number_field(:daily_car_insurance, class:"car_insurance form-control", describedby: 'basic-addon2') %>
+          </div>
+        </td>
+       
+        <td>
+          <div class="input-group mb-0">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="basic-addon3">$</span>
+            </div>
+            <%= r.number_field(:daily_third_party_insurance, class:"third_party_insurance form-control", describedby: 'basic-addon3') %>
+          </div>
+        </td>
+    </div>
+    <% end %>
+    </tr>
+  <% end %>
+  <tr>
+    <td> <%= submit_tag 'Enviar', class: 'btn btn-primary' %></td>
+  </tr>
+<% end %>
+  </tbody>
+</table>

@@ -1,0 +1,10 @@
+@import "bootstrap";
+
+.cards {
+      display: flex;
+      margin-bottom: 30px;
+}
+
+.cards > .card {
+      margin-right: 20px;
+}

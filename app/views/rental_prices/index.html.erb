@@ -1,0 +1,30 @@
+<h1>Preços de locações</h1>
+
+<% @subsidiaries.each do |subsidiary| %>
+  <h3>Filial: <%= subsidiary.name %></h3>
+<table class='table table-striped'>
+  <thead class='thead-dark'>
+    <tr>
+      <th scope="col"><%= Category.model_name.human %></th>
+      <th scope="col"><%= RentalPrice.human_attribute_name('daily_rate') %></th>
+      <th scope="col"><%= RentalPrice.human_attribute_name('daily_car_insurance') %></th>
+      <th scope="col"><%= RentalPrice.human_attribute_name('daily_third_party_insurance') %></th>
+    </tr>
+  </thead>
+  <tbody>
+      <% subsidiary.sub_rental_prices.each do |rental_price| %>
+  <div class=<%= "rental_price#{rental_price.category.id}" %>>
+      <tr>
+        <td><%= rental_price.category.name %></td>
+        <td><%= number_to_currency(rental_price.daily_rate) %></td>
+        <td><%= number_to_currency(rental_price.daily_car_insurance) %></td>
+        <td><%= number_to_currency(rental_price.daily_third_party_insurance) %></td>
+      </tr>
+  </div>
+      <% end %>
+  </tbody>
+</table>
+  <% if current_user.admin? %>
+    <%= link_to 'Editar valores', rental_price_subsidiary_path(subsidiary), class: 'btn btn-primary' %>
+  <% end %>
+<% end %>

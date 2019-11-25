@@ -1,0 +1,14 @@
+pt-BR:
+  activerecord:
+    models:
+      manufacture: 'Fabricante'
+    attributes:
+      manufacture:
+        name: 'Nome'
+    errors:
+      models:
+        manufacture:
+          attributes:
+            name:
+              blank: "não pode ficar em branco."
+

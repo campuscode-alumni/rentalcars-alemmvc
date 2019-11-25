@@ -1,0 +1,67 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <%= link_to 'Rental Cars', root_path, class: 'navbar-brand' %>
+  <button class="navbar-toggler" type="button" data-toggle="collapse"
+                                               data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                                               aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <%= link_to 'Home', root_path, class: 'nav-link' %>
+      </li>
+      <% if user_signed_in? %>
+        <% if current_user.admin? %>
+          <li class="nav-item">
+            <%= link_to 'Modelos', car_models_path, class: 'nav-link' %>
+          </li>
+          <li class="nav-item">
+            <%= link_to 'Categorias', categories_path, class: 'nav-link' %>
+          </li>
+          <li class="nav-item">
+            <%= link_to 'Filiais', subsidiaries_path, class: 'nav-link' %>
+          </li>
+          <li class="nav-item">
+            <%= link_to 'Fabricantes', manufactures_path, class: 'nav-link' %>
+          </li>
+          <li class="nav-item">
+            <%= link_to 'Configurar preços de locações', rental_prices_path, class: 'nav-link' %>
+          </li>
+          <li class="nav-item">
+            <%= link_to 'Adicionais de locação', addons_path, class: 'nav-link' %>
+          </li>
+        <% elsif current_user.user? %>
+          <li class="nav-item">
+          <%= link_to 'Registrar novo carro', new_car_path, class: 'nav-link' %>
+          </li>
+          <li class="nav-item">
+            <%= link_to 'Preços de locações', rental_prices_path, class: 'nav-link' %>
+          </li>
+          <%= link_to 'Clientes individuais', individual_clients_path, class: 'nav-link' %>
+        </li>
+        <li class="nav-item">
+          <%= link_to 'Clientes corporativos', corporate_clients_path, class: 'nav-link' %>
+        </li>
+        <li class="nav-item">
+          <%= link_to 'Locações', rentals_path, class: 'nav-link' %>
+        </li>
+        <% end %>
+      <% end %>
+    </ul>
+    <ul class="navbar-nav ml-auto">
+      <% if user_signed_in? %>
+        <li class="nav-item d-flex align-items-center mr-sm-2">
+          <strong><%= current_user.email %></strong>
+        </li>
+        <li class="nav-item">
+          <%= link_to 'Sair', destroy_user_session_path, method: :delete, class: 'btn btn-outline-primary' %>
+        </li>
+      <% else %>
+        <li class="nav-item">
+          <%= link_to 'Entrar', new_user_session_path, class: 'btn btn-outline-primary' %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+</nav>

@@ -1,0 +1,29 @@
+<h1>Cliente corporativo</h1>
+
+<h3>Nome fantasia</h3>
+<p><%= @corporate_client.trade_name %></p>
+<h3>CNPJ</h3>
+<p><%= @corporate_client.cnpj %></p>
+<h3>E-mail</h3>
+<p><%= @corporate_client.email %></p>
+
+<h3>Endereço</h3>
+
+<dl class="row">
+  <dt class="col-sm-3">Endereço</dt>
+  <dd class="col-sm-9"><%= @corporate_client.address.label %></dd>
+
+  <dt class="col-sm-3">Complemento</dt>
+  <dd class="col-sm-9"><%= @corporate_client.address.complement %></dd>
+
+  <dt class="col-sm-3">Bairro</dt>
+  <dd class="col-sm-9"><%= @corporate_client.address.neighborhood %></dd>
+
+  <dt class="col-sm-3">Cidade</dt>
+  <dd class="col-sm-9"><%= @corporate_client.address.city %></dd>
+
+  <dt class="col-sm-3">Estado</dt>
+  <dd class="col-sm-9"><%= @corporate_client.address.state %></dd>
+</dl>
+
+<%= link_to 'Editar', edit_corporate_client_path, class: 'btn btn-primary' %>

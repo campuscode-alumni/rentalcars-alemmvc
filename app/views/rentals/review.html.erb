@@ -1,0 +1,54 @@
+<h1>Locação de:  <%= @rental.client.name %></h1>
+<h3>Status: <span class="badge badge-primary"><%= t(@rental.status)%></span></h3>
+<p><%= Rental.human_attribute_name('reservation_code') %>: <%= @rental.reservation_code %></p>
+<p><%= Client.human_attribute_name('email') %>: <%= @rental.client.email %></p>
+<p>CPF/CNPJ: <%= @rental.client.cpf %></p>
+<p><%= Rental.human_attribute_name('start_date') %>: <%= l @rental.start_date, format: :long %>
+<p><%= Rental.human_attribute_name('end_date') %>: <%= l @rental.end_date, format: :long  %>
+<p><%= Rental.human_attribute_name('subsidiary') %>: <%= @rental.subsidiary.name %>
+<p><%= Rental.human_attribute_name('category') %>: <%= @rental.category.name  %>
+<p><%= Rental.human_attribute_name('price_projection') %>: <%= number_to_currency(@rental.price_projection) %>
+<% if current_user.admin? || @rental.subsidiary == current_user.subsidiary %>
+  <ul>
+    <%= form_with url: confirm_rental_path, method: :post, data: { remote: false } do |f| %>
+      <h3>Carros</h3>
+      <div class="cards">
+        <%= f.collection_radio_buttons(:car_id, @cars, :id, :license_plate) do |r| %>
+          <div class="card" style="width: 18rem;">
+            <h5 class="card-title text-center"><%= r.label{ r.radio_button(id: r.object.license_plate) } %></h5>
+            <% if r.object.car_model.photo.attached?  %>
+              <%= image_tag r.object.car_model.photo, class: 'card-img-top' %>
+            <% end %>
+            <div class="card-body">
+              <ul>
+                <li class="card-text"><%= r.object.license_plate %></li>
+                <li class="card-text"><%= r.object.car_model.name %></li>
+                <li class="card-text"><%= r.object.car_model.manufacture.name %></li>
+                <li class="card-text"><%= r.object.color %></li>
+                <li class="card-text"><%= r.object.category.daily_rate %></li>
+              </ul>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      <h3>Acessórios</h3>
+      <div class="cards">
+        <%= f.collection_check_boxes(:addon_ids, @addons, :id, :name, include_hidden: false) do |c| %>
+          <div class="card" style="width: 25rem;">
+            <div class="media">
+              <div class='align-self-center ml-1 mt-2'><%= c.label{ c.check_box(id: c.object.id) } %></div>
+              <% if c.object.photo.attached? %>
+                <%= image_tag c.object.photo, class:'mr-3 ml-3 mt-1 mb-1 align-self-center', width:64, height:64 %>
+              <% end %>
+              <div class="media-body">
+                <h5 class="mt-1">  <%= c.text %></h5>
+                <p><%= c.object.description %> </p>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      <%= f.submit 'Iniciar locação', class: 'btn btn-primary' %>
+    <% end %>
+  </ul>
+<% end %>

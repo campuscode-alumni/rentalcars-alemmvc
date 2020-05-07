@@ -1,0 +1,12 @@
+pt-BR:
+  activerecord:
+    models:
+      insurance:
+        one: Seguro
+        other: Seguros
+    attributes:
+      insurance:
+        name: Nome
+        daily_rate: Valor Diário
+        category_id: Categoria
+        category: Categoria

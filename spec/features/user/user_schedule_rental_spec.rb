@@ -6,23 +6,13 @@ feature 'User schedules rental' do
     user = create(:user, subsidiary: subsidiary)
     manufacture = create(:manufacture)
     fuel_type = create(:fuel_type)
-    category = create(:category, name: 'A', daily_rate: 10, car_insurance: 20,
-                      third_party_insurance: 20)
-    customer = create(:individual_client, name: 'Claudionor',
-                    cpf: '318.421.176-43', email: 'cro@email.com')
-    other_customer = create(:individual_client, name: 'Junior',
-                    cpf: '323.231.116-3', email: 'junior@email.com')
+    category = create(:category, name: 'A', daily_rate: 50)
+    create(:individual_client, name: 'Claudionor',
+           cpf: '318.421.176-43', email: 'cro@email.com')
     car_model = create(:car_model, name: 'Sedan', manufacture: manufacture,
                        fuel_type: fuel_type, category: category)
     create(:car, car_model: car_model)
-    create(:car, car_model: car_model)
-    create(:car, car_model: car_model)
-    create(:rental, category: category, subsidiary: subsidiary,
-           start_date: '3000-01-02', end_date: '3000-01-03',
-           client: other_customer, price_projection: 100)
-    create(:rental, category: category, subsidiary: subsidiary,
-           start_date: '3000-01-08', end_date: '3000-01-10',
-           client: other_customer, price_projection: 100)
+
     login_as user, scope: :user
 
     visit root_path
@@ -50,10 +40,9 @@ feature 'User schedules rental' do
     user = create(:user, subsidiary: subsidiary)
     manufacture = create(:manufacture)
     fuel_type = create(:fuel_type)
-    category = create(:category, name: 'A', daily_rate: 10, car_insurance: 20,
-                      third_party_insurance: 20)
+    category = create(:category, name: 'A', daily_rate: 10)
     create(:individual_client, name: 'Claudionor',
-                    cpf: '318.421.176-43', email: 'cro@email.com')
+           cpf: '318.421.176-43', email: 'cro@email.com')
     car_model = create(:car_model, name: 'Sedan', manufacture: manufacture,
                        fuel_type: fuel_type, category: category)
     car = create(:car, car_model: car_model)
@@ -77,10 +66,9 @@ feature 'User schedules rental' do
     user = create(:user, subsidiary: subsidiary)
     manufacture = create(:manufacture)
     fuel_type = create(:fuel_type)
-    category = create(:category, name: 'A', daily_rate: 10, car_insurance: 20,
-                      third_party_insurance: 20)
+    category = create(:category, name: 'A', daily_rate: 10)
     create(:individual_client, name: 'Claudionor',
-                    cpf: '318.421.176-43', email: 'cro@email.com')
+           cpf: '318.421.176-43', email: 'cro@email.com')
     car_model = create(:car_model, name: 'Sedan', manufacture: manufacture,
                        fuel_type: fuel_type, category: category)
     car = create(:car, car_model: car_model)
@@ -101,19 +89,16 @@ feature 'User schedules rental' do
   scenario 'and cars of the chosen category must be available' do
     subsidiary = create(:subsidiary, name: 'Almeida Motors')
     user = create(:user, subsidiary: subsidiary)
-    category = create(:category, name: 'A', daily_rate: 10, car_insurance: 20,
-                      third_party_insurance: 20)
-    other_category = create(:category, name: 'B', daily_rate: 10,
-                            car_insurance: 20,
-                            third_party_insurance: 20)
+    category = create(:category, name: 'A', daily_rate: 10)
+    other_category = create(:category, name: 'B', daily_rate: 10)
     manufacture = create(:manufacture)
     fuel_type = create(:fuel_type)
     customer =  create(:individual_client, name: 'Claudionor', cpf: '318.421.176-43',
-           email: 'cro@email.com')
+                       email: 'cro@email.com')
     car_model = create(:car_model, name: 'Sedan', manufacture: manufacture,
                        fuel_type: fuel_type, category: category)
     other_car_model = create(:car_model, name: 'Sedan', manufacture: manufacture,
-                       fuel_type: fuel_type, category: other_category)
+                             fuel_type: fuel_type, category: other_category)
     car = create(:car, car_model: car_model, status: :unavailable)
     other_car = create(:car, car_model: other_car_model, status: :available)
     create(:rental, category: other_category, subsidiary: subsidiary,
@@ -138,12 +123,11 @@ feature 'User schedules rental' do
     user = create(:user, subsidiary: subsidiary)
     manufacture = create(:manufacture)
     fuel_type = create(:fuel_type)
-    category = create(:category, name: 'A', daily_rate: 10, car_insurance: 20,
-                      third_party_insurance: 20)
+    category = create(:category, name: 'A', daily_rate: 10)
     customer = create(:individual_client, name: 'Claudionor',
-                    cpf: '318.421.176-43', email: 'cro@email.com')
+                      cpf: '318.421.176-43', email: 'cro@email.com')
     other_customer = create(:individual_client, name: 'Junior',
-                    cpf: '323.231.116-3', email: 'junior@email.com')
+                            cpf: '323.231.116-3', email: 'junior@email.com')
     car_model = create(:car_model, name: 'Sedan', manufacture: manufacture,
                        fuel_type: fuel_type, category: category)
     create(:car, car_model: car_model)

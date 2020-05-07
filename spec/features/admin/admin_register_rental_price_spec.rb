@@ -18,33 +18,23 @@ feature 'Admin registers multiple rental prices' do
 
     within('.rental_price1') do
       find(:css, '.daily_rate').set('50.0')
-      find(:css, '.car_insurance').set('80.0')
-      find(:css, '.third_party_insurance').set('75.0')
     end
 
     within('.rental_price2') do
       find(:css, '.daily_rate').set('54.70')
-      find(:css, '.car_insurance').set('56.50')
-      find(:css, '.third_party_insurance').set('43.10')
     end
 
     click_on 'Enviar'
 
     expect(page).to have_css('th', text: 'Categoria')
     expect(page).to have_css('th', text: 'Diária')
-    expect(page).to have_css('th', text: 'Seguro do carro')
-    expect(page).to have_css('th', text: 'Seguro contra terceiros')
 
     within('.rental_price1') do
       expect(page).to have_css('td', text: 'R$ 50,0')
-      expect(page).to have_css('td', text: 'R$ 80,0')
-      expect(page).to have_css('td', text: 'R$ 75,0')
     end
 
     within('.rental_price2') do
       expect(page).to have_css('td', text: 'R$ 54,7')
-      expect(page).to have_css('td', text: 'R$ 56,5')
-      expect(page).to have_css('td', text: 'R$ 43,1')
     end
   end
 
@@ -65,22 +55,15 @@ feature 'Admin registers multiple rental prices' do
 
     within('.rental_price1') do
       find(:css, '.daily_rate').set('')
-      find(:css, '.car_insurance').set('')
-      find(:css, '.third_party_insurance').set('')
     end
 
     within('.rental_price2') do
       find(:css, '.daily_rate').set('')
-      find(:css, '.car_insurance').set('')
-      find(:css, '.third_party_insurance').set('')
     end
 
     click_on 'Enviar'
 
     expect(page).to have_content('Diária não pode ficar em branco')
-    expect(page).to have_content('Seguro do carro não pode ficar em branco')
-    expect(page).to have_content('Seguro contra terceiros não pode ficar em '\
-                                 'branco')
   end
 
   scenario 'and price table shows only last set prices' do
@@ -90,10 +73,8 @@ feature 'Admin registers multiple rental prices' do
     user = create(:user, role: :admin)
     category_a = create(:category, name: 'A')
     category_b = create(:category, name: 'B')
-    create(:rental_price, category: category_a, subsidiary: subsidiary, daily_rate: 10,
-           daily_car_insurance: 11, daily_third_party_insurance:12)
-    create(:rental_price, category: category_b,subsidiary: subsidiary, daily_rate: 10,
-           daily_car_insurance: 11, daily_third_party_insurance:12)
+    create(:rental_price, category: category_a, subsidiary: subsidiary, daily_rate: 10)
+    create(:rental_price, category: category_b,subsidiary: subsidiary, daily_rate: 10)
 
     login_as user, scope: :user
     visit root_path
@@ -102,33 +83,23 @@ feature 'Admin registers multiple rental prices' do
 
     within('.rental_price1') do
       find(:css, '.daily_rate').set('50.0')
-      find(:css, '.car_insurance').set('80.0')
-      find(:css, '.third_party_insurance').set('75.0')
     end
 
     within('.rental_price2') do
       find(:css, '.daily_rate').set('54.70')
-      find(:css, '.car_insurance').set('56.50')
-      find(:css, '.third_party_insurance').set('43.10')
     end
 
     click_on 'Enviar'
 
     expect(page).to have_css('th', text: 'Categoria')
     expect(page).to have_css('th', text: 'Diária')
-    expect(page).to have_css('th', text: 'Seguro do carro')
-    expect(page).to have_css('th', text: 'Seguro contra terceiros')
 
     within('.rental_price1') do
       expect(page).to have_css('td', text: 'R$ 50,0')
-      expect(page).to have_css('td', text: 'R$ 80,0')
-      expect(page).to have_css('td', text: 'R$ 75,0')
     end
 
     within('.rental_price2') do
       expect(page).to have_css('td', text: 'R$ 54,7')
-      expect(page).to have_css('td', text: 'R$ 56,5')
-      expect(page).to have_css('td', text: 'R$ 43,1')
     end
   end
 

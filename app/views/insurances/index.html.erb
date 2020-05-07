@@ -1,0 +1,11 @@
+<h1>Seguros</h1>
+<% @categories.each do |cat| %>
+
+  <h2><%= cat.description %></h2>
+  <% cat.insurances.each do |ins| %>
+    <%= ins.name %>
+    Valor Diário: <%= number_to_currency ins.daily_rate %>
+  <% end %>
+<% end %>
+
+<%= link_to 'Cadastrar Novo Seguro', new_insurance_path() %>

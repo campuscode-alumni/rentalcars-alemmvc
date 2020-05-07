@@ -1,13 +1,4 @@
-<% if manufacture.errors.any? %>
-  <div class="alert alert-danger">
-    <ul>
-      <% manufacture.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-    </ul>
-  </div>
-<% end %>
-
+<%= render partial: 'shared/errors', locals: { record: manufacture } %>
 <%= form_for manufacture do |f| %>
   <div class="form-group">
     <%= f.label :name %>

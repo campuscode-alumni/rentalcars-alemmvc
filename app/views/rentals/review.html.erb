@@ -31,6 +31,10 @@
           </div>
         <% end %>
       </div>
+      <h3>Seguros</h3>
+      <div class="cards">
+        <%= f.collection_check_boxes(:insurances_ids, @insurances, :id, :name, include_hidden: false)  %>
+      </div>
       <h3>Acessórios</h3>
       <div class="cards">
         <%= f.collection_check_boxes(:addon_ids, @addons, :id, :name, include_hidden: false) do |c| %>
@@ -48,6 +52,7 @@
           </div>
         <% end %>
       </div>
+ 
       <%= f.submit 'Iniciar locação', class: 'btn btn-primary' %>
     <% end %>
   </ul>

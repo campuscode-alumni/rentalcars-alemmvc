@@ -37,8 +37,6 @@ class RentalPricesController < ApplicationController
   private
 
   def rental_price_params(price_params)
-    price_params.permit(:daily_rate, :daily_car_insurance,
-                        :daily_third_party_insurance,
-                        :category_id)
+    price_params.permit(:daily_rate, :category_id)
   end
 end

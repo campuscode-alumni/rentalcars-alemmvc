@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_23_205306) do
+ActiveRecord::Schema.define(version: 2020_05_07_223403) do
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -96,8 +96,6 @@ ActiveRecord::Schema.define(version: 2019_11_23_205306) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.float "daily_rate"
-    t.float "third_party_insurance"
-    t.float "car_insurance"
   end
 
   create_table "clients", force: :cascade do |t|
@@ -115,6 +113,15 @@ ActiveRecord::Schema.define(version: 2019_11_23_205306) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "insurances", force: :cascade do |t|
+    t.integer "category_id"
+    t.string "name"
+    t.float "daily_rate"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "index_insurances_on_category_id"
   end
 
   create_table "manufactures", force: :cascade do |t|
@@ -138,7 +145,6 @@ ActiveRecord::Schema.define(version: 2019_11_23_205306) do
     t.float "daily_rate"
     t.integer "subsidiary_id"
     t.integer "category_id"
-    t.float "daily_car_insurance"
     t.float "daily_third_party_insurance"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

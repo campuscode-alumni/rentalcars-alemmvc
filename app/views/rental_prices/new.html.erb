@@ -14,8 +14,6 @@
     <tr>
       <th scope="col"><%= Category.model_name.human %></th>
       <th scope="col"><%= RentalPrice.human_attribute_name('daily_rate') %></th>
-      <th scope="col"><%= RentalPrice.human_attribute_name('daily_car_insurance') %></th>
-      <th scope="col"><%= RentalPrice.human_attribute_name('daily_third_party_insurance') %></th>
     </tr>
   </thead>
   <tbody>
@@ -32,23 +30,6 @@
               <span class="input-group-text" id="basic-addon1">$</span>
             </div>
             <%= r.number_field(:daily_rate, class:"daily_rate form-control", describedby: 'basic-addon1') %>
-          </div>
-        </td>
-        <td>
-          <div class="input-group mb-0">
-            <div class="input-group-prepend">
-              <span class="input-group-text" id="basic-addon2">$</span>
-            </div>
-            <%= r.number_field(:daily_car_insurance, class:"car_insurance form-control", describedby: 'basic-addon2') %>
-          </div>
-        </td>
-       
-        <td>
-          <div class="input-group mb-0">
-            <div class="input-group-prepend">
-              <span class="input-group-text" id="basic-addon3">$</span>
-            </div>
-            <%= r.number_field(:daily_third_party_insurance, class:"third_party_insurance form-control", describedby: 'basic-addon3') %>
           </div>
         </td>
     </div>

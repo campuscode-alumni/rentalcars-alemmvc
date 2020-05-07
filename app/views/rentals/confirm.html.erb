@@ -7,7 +7,7 @@
 <p><%= Rental.human_attribute_name('category') %>: <%= @rental.category.name  %>
 <% @rental.rental_items.each do |rental_item| %>
   <% if !rental_item.car? %>
-    <p><%= rental_item.rentable.addon.name %>: n <%= rental_item.rentable.registration_number  %></p>
+    <%= render rental_item.rentable %>
   <% end %>
 <% end %>
 <p><%= Rental.human_attribute_name('price_projection') %>: <%= number_to_currency(@rental.price_projection) %>

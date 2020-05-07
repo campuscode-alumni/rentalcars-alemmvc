@@ -19,7 +19,7 @@
 
   <dt class="col-sm-3">Estado</dt>
   <dd class="col-sm-9"><%= @subsidiary.address.state %></dd>
-  
+
   <dd class="col-sm-9"><%= link_to 'Editar', edit_subsidiary_path, class: 'btn btn-primary' %></dd>
 </dl>
 
@@ -28,20 +28,16 @@
     <tr>
       <th scope="col"><%= Category.model_name.human %></th>
       <th scope="col"><%= RentalPrice.human_attribute_name('daily_rate') %> </th>
-      <th scope="col"><%= RentalPrice.human_attribute_name('daily_car_insurance') %></th>
-      <th scope="col"><%= RentalPrice.human_attribute_name('daily_third_party_insurance') %></th>
     </tr>
   </thead>
   <tbody>
-      <% @rental_prices.each do |rental_price| %>
-  <div class=<%= "rental_price#{rental_price.category.id}" %>>
-      <tr>
-        <td><%= rental_price.category.name %></td>
-        <td><%= number_to_currency rental_price.daily_rate %></td>
-        <td><%= number_to_currency rental_price.daily_car_insurance %></td>
-        <td><%= number_to_currency rental_price.daily_third_party_insurance %></td>
-      </tr>
-  </div>
-      <% end %>
+    <% @rental_prices.each do |rental_price| %>
+      <div class=<%= "rental_price#{rental_price.category.id}" %>>
+        <tr>
+          <td><%= rental_price.category.name %></td>
+          <td><%= number_to_currency rental_price.daily_rate %></td>
+        </tr>
+      </div>
+    <% end %>
   </tbody>
 </table>

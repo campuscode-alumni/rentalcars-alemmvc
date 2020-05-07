@@ -14,10 +14,7 @@ class CategoriesController < ApplicationController
     if @category.save
       Subsidiary.all.each do |subsidiary|
         RentalPrice.create!(category: @category, subsidiary: subsidiary,
-                            daily_rate: @category.daily_rate,
-                            daily_car_insurance: @category.car_insurance,
-                            daily_third_party_insurance:
-                            @category.third_party_insurance)
+                            daily_rate: @category.daily_rate)
       end
       redirect_to categories_path
     else

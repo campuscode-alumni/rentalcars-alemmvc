@@ -7,8 +7,7 @@ describe "Rentals", :type => :request do
     user = create(:user, subsidiary: subsidiary)
     manufacture = create(:manufacture)
     fuel_type = create(:fuel_type)
-    category = create(:category, name: 'A', daily_rate: 10, car_insurance: 20,
-                      third_party_insurance: 20)
+    category = create(:category, name: 'A', daily_rate: 10)
     customer = create(:individual_client, name: 'Claudionor',
                       cpf: '318.421.176-43', email: 'cro@email.com')
     car_model = create(:car_model, name: 'Sedan', manufacture: manufacture,

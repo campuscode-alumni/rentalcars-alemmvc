@@ -30,9 +30,12 @@ class RentalsController < ApplicationController
     @rental = Rental.find(params[:id])
     if @car = Car.find_by(id: params[:car_id])
       @rental.rental_items.create(rentable: @car, daily_rate:
-                                  @car.category.daily_rate +
-                                  @car.category.third_party_insurance +
-                                  @car.category.car_insurance)
+                                  @car.category.daily_rate)
+      if insurances = Insurance.where(id: params[:insurances_ids])
+        insurances.each do |ins|
+          @rental.rental_items.create(rentable: ins, daily_rate: ins.daily_rate)
+        end
+      end
       if addons = Addon.where(id: params[:addon_ids])
         addon_items = addons.map { |addon| addon.first_available_item }
         addon_items.each do |addon_item|
@@ -45,6 +48,7 @@ class RentalsController < ApplicationController
       flash[:danger] = "Carro deve ser selecionado"
       @cars = @rental.available_cars
       @addons = Addon.joins(:addon_items).where(addon_items: { status: :available  }).group(:id)
+      @insurances = @rental.category.insurances
       render :review
     end
   end
@@ -63,6 +67,7 @@ class RentalsController < ApplicationController
     @rental.in_review!
     @cars = @rental.available_cars
     @addons = Addon.joins(:addon_items).where(addon_items: { status: :available  }).group(:id)
+    @insurances = @rental.category.insurances
   end
 
   def start

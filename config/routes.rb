@@ -8,6 +8,7 @@ Rails.application.routes.draw do
       post 'rental_price', to: 'rental_prices#create'
     end
   end
+  resources :insurances, only: %i[index new create]
   resources :cars, only: %i[show new create]
   resources :manufactures, only: %i[new create show edit update index]
   resources :rental_prices, only: %i[index]

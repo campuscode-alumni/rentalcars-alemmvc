@@ -1,13 +1,5 @@
-<% if car.errors.any? %>
-  <div class="alert alert-danger">
-    <ul>
-      <% car.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-    </ul>
-  </div>
-<% end %>
 
+<%= render partial: 'shared/errors', locals: { record: car } %>
 <%= form_for car do |f| %>
   <div class="form-group">
     <%= f.label :car_model_id %>

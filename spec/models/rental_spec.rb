@@ -14,8 +14,7 @@ RSpec.describe Rental, type: :model do
   context '#generate_reservation_code' do
     it 'should generate a random reservation code on create' do
       subsidiary = create(:subsidiary, name: 'Almeida Motors')
-      category = create(:category, name: 'A', daily_rate: 10, car_insurance: 20,
-                                   third_party_insurance: 20)
+      category = create(:category, name: 'A', daily_rate: 10)
       customer = create(:individual_client, name: 'Claudionor',
                                             cpf: '318.421.176-43',
                                             email: 'cro@email.com')
@@ -34,8 +33,7 @@ RSpec.describe Rental, type: :model do
 
     it 'and code must be unique' do
       subsidiary = create(:subsidiary, name: 'Almeida Motors')
-      category = create(:category, name: 'A', daily_rate: 10, car_insurance: 20,
-                                   third_party_insurance: 20)
+      category = create(:category, name: 'A', daily_rate: 10)
       customer = create(:individual_client, name: 'Claudionor',
                                             cpf: '318.421.176-43',
                                             email: 'cro@email.com')

@@ -1,6 +1,5 @@
 class Rental < ApplicationRecord
   before_create :generate_reservation_code
-  enum status: { scheduled: 0, in_review: 5, ongoing: 10, finalized: 15 }
   belongs_to :client
   belongs_to :category
   belongs_to :subsidiary
@@ -9,13 +8,12 @@ class Rental < ApplicationRecord
   validate :cars_available, on: :create
   has_many :rental_items
   accepts_nested_attributes_for :rental_items
+  enum status: { scheduled: 0, in_review: 5, ongoing: 10, finalized: 15 }
 
   def calculate_price_projection
     return 0 unless start_date && end_date && category
     days = (end_date - start_date).to_i
-    value = category.daily_rate + category.car_insurance +
-      category.third_party_insurance
-    days * value
+    days * category.daily_rate
   end
 
   def calculate_final_price

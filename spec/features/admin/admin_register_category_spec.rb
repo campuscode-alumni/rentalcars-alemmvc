@@ -11,15 +11,11 @@ feature 'Admin register category' do
 
     find(:css, '.name').set('Deluxe')
     find(:css, '.daily_rate').set(50.8)
-    find(:css, '.car_insurance').set(51.4)
-    find(:css, '.third_party_insurance').set(52.3)
 
     click_on 'Enviar'
 
     expect(page).to have_css('td', text: 'Deluxe')
     expect(page).to have_css('td', text: 'R$ 50,80')
-    expect(page).to have_css('td', text: 'R$ 51,40')
-    expect(page).to have_css('td', text: 'R$ 52,30')
   end
 
   scenario 'and must be admin' do
@@ -49,21 +45,15 @@ feature 'Admin register category' do
     click_on 'Nova categoria'
     find(:css, '.name').set('Deluxe')
     find(:css, '.daily_rate').set(50.8)
-    find(:css, '.car_insurance').set(51.4)
-    find(:css, '.third_party_insurance').set(52.3)
     click_on 'Enviar'
 
     rental_prices = RentalPrice.all
     expect(rental_prices[0].category.name).to eq 'Deluxe'
     expect(rental_prices[0].subsidiary.name).to eq 'Herickson'
     expect(rental_prices[0].daily_rate).to eq 50.8
-    expect(rental_prices[0].daily_car_insurance).to eq 51.4
-    expect(rental_prices[0].daily_third_party_insurance).to eq 52.3
     expect(rental_prices[1].category.name).to eq 'Deluxe'
     expect(rental_prices[1].subsidiary.name).to eq 'Claudionor'
     expect(rental_prices[1].daily_rate).to eq 50.8
-    expect(rental_prices[1].daily_car_insurance).to eq 51.4
-    expect(rental_prices[1].daily_third_party_insurance).to eq 52.3
   end
 
   scenario 'and must fill all fields' do
@@ -76,13 +66,9 @@ feature 'Admin register category' do
 
     find(:css, '.name').set('')
     find(:css, '.daily_rate').set('')
-    find(:css, '.car_insurance').set('')
-    find(:css, '.third_party_insurance').set('')
     click_on 'Enviar'
 
     expect(page).to have_content('Nome não pode ficar em branco')
     expect(page).to have_content('Diária padrão não pode ficar em branco')
-    expect(page).to have_content('Seguro padrão do carro não pode ficar em branco')
-    expect(page).to have_content('Seguro padrão contra terceiros')
   end
 end

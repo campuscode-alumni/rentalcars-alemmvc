@@ -45,7 +45,7 @@ class RentalsController < ApplicationController
       @rental.update(price_projection: @rental.calculate_final_price)
       render :confirm
     else
-      flash[:danger] = "Carro deve ser selecionado"
+      flash[:alert] = "Carro deve ser selecionado"
       @cars = @rental.available_cars
       @addons = Addon.joins(:addon_items).where(addon_items: { status: :available  }).group(:id)
       @insurances = @rental.category.insurances
@@ -60,6 +60,8 @@ class RentalsController < ApplicationController
   def search
     @rental = Rental.find_by(reservation_code: params[:q])
     return redirect_to review_rental_path(@rental) if @rental
+    flash[:alert] = 'Não foi possível encontrar a locação'
+    redirect_to rentals_path
   end
 
   def review

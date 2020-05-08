@@ -1,10 +1,12 @@
 <h1>Locações</h1>
 <%= link_to 'Agendar locação', new_rental_path, class: 'btn btn-primary' %>
+<div class="py-3">
 <%= form_with(url: search_rentals_path, method: :get, data: {remote: false}) do |f| %>
   <%= f.label(:q, 'Código da reserva:') %>
   <%= f.text_field(:q)  %>
   <%= f.submit 'Buscar' %>
 <% end %>
+</div>
 <table class='table table-striped'>
   <thead class='thead-dark'>
     <tr>

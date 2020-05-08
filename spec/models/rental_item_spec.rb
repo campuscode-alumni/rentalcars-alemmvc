@@ -1,5 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe RentalItem, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe 'associations' do
+    it { should belong_to(:rental) }
+    it { should belong_to(:rentable) }
+  end
 end

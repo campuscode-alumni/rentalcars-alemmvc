@@ -40,5 +40,5 @@ existem carros disponíveis no período escolhido.
 - Ao iniciar a locação, deve ser escolhido o carro de acordo com a categoria
   escolhida
 - Uma locação deve ser composta de ao menos um carro e 0 ou N acessórios
-  adicionais (AddOns)
+  adicionais (AddOns) além de 0 ou N coberturas de seguro
 

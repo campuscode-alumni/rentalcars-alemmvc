@@ -182,7 +182,7 @@ feature 'User fulfils rental' do
     click_on 'Confirmar'
 
     expect(current_path).to eq rental_path(rental)
-    expect(page).to have_content('em andamento')
+    expect(page).to have_css('span.badge-success', text: 'em andamento')
   end
 
   scenario 'and user and rental must belong to same subsidiary' do

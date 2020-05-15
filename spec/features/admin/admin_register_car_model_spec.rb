@@ -11,7 +11,7 @@ feature 'Admin register car model' do
     visit root_path
     click_on 'Modelos'
     click_on 'Registrar novo modelo'
-    fill_in 'Nome', with: 'Fiat Novo Uno 1.0'
+    fill_in 'Nome', with: 'Novo Uno 1.0'
     fill_in 'Ano', with: '2014/2015'
     select 'Fiat', from: 'Fabricante'
     fill_in 'Especificação do motor', with: '1.0'
@@ -21,7 +21,7 @@ feature 'Admin register car model' do
     click_on 'Enviar'
 
     expect(page).to have_content('Nome')
-    expect(page).to have_content('Fiat Novo Uno 1.0')
+    expect(page).to have_content('Novo Uno 1.0')
     expect(page).to have_content('Ano')
     expect(page).to have_content('2014/2015')
     expect(page).to have_content('Fabricante')

@@ -1,5 +1,6 @@
 class AddonsController < ApplicationController
   before_action :set_addon, only: %i[edit update]
+  before_action :authorize_admin
 
   def index
     @addons = Addon.all

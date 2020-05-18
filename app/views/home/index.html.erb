@@ -1,0 +1,5 @@
+<%= form_with(url: search_rentals_path, method: :get, data: {remote: false}) do |f| %>
+  <%= f.label(:q, 'Código da reserva:') %>
+  <%= f.text_field(:q)  %>
+  <%= f.submit 'Buscar' %>
+<% end %>

@@ -5,6 +5,7 @@ feature 'Admin login to system' do
     user = create(:user, role: :admin)
 
     visit root_path
+    click_on 'Entrar'
     fill_in 'E-mail', with: user.email
     fill_in 'Senha', with: user.password
     within('div.login_form') do
@@ -19,6 +20,7 @@ feature 'Admin login to system' do
     user = create(:user, role: :admin)
 
     visit root_path
+    click_on 'Entrar'
     fill_in 'E-mail', with: user.email
     fill_in 'Senha', with: user.password
     within('div.login_form') do

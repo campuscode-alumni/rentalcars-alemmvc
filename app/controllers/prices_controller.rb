@@ -1,4 +1,5 @@
 class PricesController < ApplicationController
+  before_action :authorize_admin
 
   def index
     @prices = Price.all

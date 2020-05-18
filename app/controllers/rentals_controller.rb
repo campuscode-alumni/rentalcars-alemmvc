@@ -13,11 +13,9 @@ class RentalsController < ApplicationController
 
   def create
     @rental = Rental.new(rental_params)
-    subsidiary = current_subsidiary
-    @rental.subsidiary = subsidiary
-    @rental.status = :scheduled
-    @rental.price_projection = @rental.calculate_price_projection
-    if @rental.save
+    @rental.subsidiary = current_subsidiary
+
+    if RentalScheduler.new(@rental).schedule #Tell Dont Ask
       redirect_to rental_path(@rental.id)
     else
       @clients = Client.all

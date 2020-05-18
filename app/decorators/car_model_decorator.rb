@@ -6,7 +6,7 @@ class CarModelDecorator < Draper::Decorator
     return polymorphic_url photo if photo.attached?
     # para o método acima funcionar, além de incluir os url_helpers
     # você vai precisar configurar o routes.default_url_options[:host]
-    # no seu arquivp environments/test.rb
+    # no seu arquivo environments/test.rb
 
     'https://via.placeholder.com/150' # default photo
   end

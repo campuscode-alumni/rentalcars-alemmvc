@@ -6,10 +6,12 @@ class CarsController < ApplicationController
 
   def create
     @car = Car.new(car_params)
-    return redirect_to @car if @car.save
-    
-    @car_models = CarModel.all
-    render :new
+    if @car.save
+      redirect_to @car
+    else
+      @car_models = CarModel.all
+      render :new
+    end
   end
 
   def show

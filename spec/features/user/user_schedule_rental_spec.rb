@@ -117,39 +117,4 @@ feature 'User schedules rental' do
 
     expect(page).to have_content('Não há carros disponíveis na categoria escolhida.')
   end
-
-  scenario 'and price projection can not be zero or less' do
-    subsidiary = create(:subsidiary, name: 'Almeida Motors')
-    user = create(:user, subsidiary: subsidiary)
-    manufacture = create(:manufacture)
-    fuel_type = create(:fuel_type)
-    category = create(:category, name: 'A', daily_rate: 10)
-    customer = create(:individual_client, name: 'Claudionor',
-                      cpf: '318.421.176-43', email: 'cro@email.com')
-    other_customer = create(:individual_client, name: 'Junior',
-                            cpf: '323.231.116-3', email: 'junior@email.com')
-    car_model = create(:car_model, name: 'Sedan', manufacture: manufacture,
-                       fuel_type: fuel_type, category: category)
-    create(:car, car_model: car_model)
-    create(:car, car_model: car_model)
-    create(:car, car_model: car_model)
-    create(:rental, category: category, subsidiary: subsidiary,
-           start_date: '3000-01-02', end_date: '3000-01-03',
-           client: other_customer, price_projection: 100)
-    create(:rental, category: category, subsidiary: subsidiary,
-           start_date: '3000-01-08', end_date: '3000-01-10',
-           client: other_customer, price_projection: 100)
-    login_as user, scope: :user
-
-    visit root_path
-    click_on 'Locações'
-    click_on 'Agendar locação'
-    find(:css, '.start_date').set('3000-01-01')
-    find(:css, '.end_date').set('3000-01-01')
-    find(:css, '#inputGroupSelect01').set('Claudionor')
-    find(:css, '#inputGroupSelect02').set('A')
-    click_on 'Agendar'
-
-    expect(page).to have_content('Valor estimado não pode ser zero')
-  end
 end

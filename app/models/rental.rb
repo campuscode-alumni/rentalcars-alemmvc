@@ -10,6 +10,10 @@ class Rental < ApplicationRecord
   accepts_nested_attributes_for :rental_items
   enum status: { scheduled: 0, in_review: 5, ongoing: 10, finalized: 15 }
 
+  def owner?(user)
+  end
+
+
   def calculate_final_price
     days = (end_date - start_date).to_i
     value = 0

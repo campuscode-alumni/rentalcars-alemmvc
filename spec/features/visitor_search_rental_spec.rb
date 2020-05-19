@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 feature 'Visitor search rental' do 
-  xscenario 'with valid token' do
+  scenario 'with valid token' do
     
     subsidiary = create(:subsidiary, name: 'Almeida Motors')
     manufacture = create(:manufacture)
@@ -22,5 +22,6 @@ feature 'Visitor search rental' do
     click_on 'Buscar'
 
     expect(current_path).to eq review_rental_path(rental.id)
+    expect(page).not_to have_button('Iniciar Locação')
   end
 end

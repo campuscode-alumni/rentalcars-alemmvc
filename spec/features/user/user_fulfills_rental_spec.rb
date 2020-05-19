@@ -16,6 +16,7 @@ feature 'User fulfils rental' do
     rental = create(:rental, category: category, subsidiary: subsidiary,
                     start_date: '3000-01-08', end_date: '3000-01-10',
                     client: customer, price_projection: 100, status: :scheduled)
+    
     login_as user, scope: :user
 
     visit root_path

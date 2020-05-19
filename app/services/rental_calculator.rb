@@ -3,7 +3,6 @@ class RentalCalculator
     new(rental).calculate()
   end
 
-
   def calculate()
     return 0 unless rental.start_date && rental.end_date && rental.category
     total_days * category_price
@@ -17,7 +16,6 @@ class RentalCalculator
     @rental = rental
   end
 
-  
   def total_days
     days = (rental.end_date - rental.start_date).to_i
     days > 0 ? days : 1

@@ -1,5 +1,5 @@
 class RentalsController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: [:search, :review]
   before_action :authorize_user!, only: %i[confirm]
 
   def index
@@ -48,6 +48,7 @@ class RentalsController < ApplicationController
       @cars = @rental.available_cars
       @addons = Addon.joins(:addon_items).where(addon_items: { status: :available  }).group(:id)
       @insurances = @rental.category.insurances
+      @rental = RentalPresenter.new(@rental, current_user)
       render :review
     end
   end
@@ -69,6 +70,7 @@ class RentalsController < ApplicationController
     @cars = @rental.available_cars
     @addons = Addon.joins(:addon_items).where(addon_items: { status: :available  }).group(:id)
     @insurances = @rental.category.insurances
+    @rental = RentalPresenter.new(@rental, current_user)
   end
 
   def start

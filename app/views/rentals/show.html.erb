@@ -1,5 +1,7 @@
 <h1>Locação de:  <%= @rental.client.name %></h1>
-<h3>Status: <span class="badge badge-primary"><%= t(@rental.status)%></span></h3>
+<h3>Status:</h3>
+<%= rental_status(@rental.status) %>
+<!-- span class="badge badge-primary"><%#= t(@rental.status)%></span -->
 <p><%= Rental.human_attribute_name('reservation_code') %>: <%= @rental.reservation_code %></p>
 <p><%= Client.human_attribute_name('email') %>: <%= @rental.client.email %></p>
 <p>CPF/CNPJ: <%= @rental.client.cpf %></p>

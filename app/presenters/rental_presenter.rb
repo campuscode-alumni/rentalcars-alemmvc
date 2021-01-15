@@ -1,8 +1,10 @@
 class RentalPresenter < SimpleDelegator
   delegate :content_tag, :link_to, to: :helper
+  attr_reader :user
 
-  def initialize(rental)
+  def initialize(rental, user = nil)
     super(rental)
+    @user = user
   end
 
   def status_badge()
@@ -13,10 +15,13 @@ class RentalPresenter < SimpleDelegator
   end
 
   def next_action_link
-    if __getobj__.scheduled?
-      return link_to('Iniciar Locação', routes.review_rental_path(__getobj__))
-    elsif  __getobj__.ongoing?
-      return link_to('Finalizar Locação', routes.finish_rental_path(__getobj__))
+    return '' unless user
+    return '' unless user.admin? || subsidiary == user.subsidiary
+
+    if scheduled?
+      return link_to('Iniciar Locação', routes.review_rental_path(self))
+    elsif ongoing?
+      return link_to('Finalizar Locação', routes.finish_rental_path(self))
     end
   end
 

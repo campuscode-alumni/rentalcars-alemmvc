@@ -8,9 +8,7 @@
   <dt class="col-sm-3">Fabricante</dt>
   <dd class="col-sm-9"><%= @car_model.manufacture.name %></dd>
 
-  <% if @car_model.photo.attached? %>
-    <%= image_tag @car_model.photo, class: 'card-img-top' %>
-  <% end  %>
+  <%= image_tag @car_model.photo_url, class: 'card-img-top' %>
 
   <dt class="col-sm-3">Especificação do motor</dt>
   <dd class="col-sm-9"><%= @car_model.motorization %></dd>

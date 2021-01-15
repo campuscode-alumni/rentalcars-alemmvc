@@ -6,7 +6,7 @@ class CarModelsController < ApplicationController
   end
 
   def show
-    @car_model = CarModel.find(params[:id])
+    @car_model = CarModel.find(params[:id]).decorate
   end
 
   def new

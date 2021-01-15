@@ -17,7 +17,7 @@ feature 'Admin register car model' do
     fill_in 'Especificação do motor', with: '1.0'
     select 'Gasolina', from: 'Combustível'
     select 'A', from: 'Categoria'
-    fill_in 'Características', with: '2 portas,5 pessoas'
+    fill_in 'Características', with: '2 portas, 5 pessoas'
     click_on 'Enviar'
 
     expect(page).to have_content('Nome')

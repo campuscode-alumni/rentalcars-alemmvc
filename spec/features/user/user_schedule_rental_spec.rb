@@ -25,7 +25,7 @@ feature 'User schedules rental' do
     click_on 'Agendar'
 
     expect(page).to have_css('h1', text: 'Locação de: Claudionor')
-    expect(page).to have_css('h3', text: 'Status: agendada')
+    expect(page).to have_css('span.badge', text: 'Agendada')
     expect(page).to have_css('p', text: 'cro@email.com')
     expect(page).to have_css('p', text: '318.421.176-43')
     expect(page).to have_css('p', text: '04 de janeiro de 3000')
@@ -33,6 +33,8 @@ feature 'User schedules rental' do
     expect(page).to have_css('p', text: 'Almeida Motors')
     expect(page).to have_css('p', text: 'Categoria: A')
     expect(page).to have_css('p', text: 'R$ 150,00')
+    expect(page).to have_link('Iniciar Locação', href: review_rental_path(Rental.last))
+    expect(page).not_to have_link('Finalizar Locação')
   end
 
   scenario 'and must fill all fields' do

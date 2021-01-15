@@ -23,6 +23,7 @@ Rails.application.routes.draw do
       get 'review'
       post 'confirm'
       post 'start'
+      post 'finish'
     end
   end
 

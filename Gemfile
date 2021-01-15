@@ -7,6 +7,7 @@ gem 'active_storage_validations'
 gem 'bootstrap', '~> 4.3.1'
 gem 'coffee-rails', '~> 4.2'
 gem 'devise', '~> 4.6', '>= 4.6.2'
+gem 'draper'
 gem 'jbuilder', '~> 2.5'
 gem 'jquery-rails'
 gem 'mini_racer', platforms: :ruby
